@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"likeIt/domain/aggregate"
-	"likeIt/domain/aggregate/vo"
+	"likeIt/domain/badge"
+	"likeIt/domain/like"
+	"likeIt/domain/user"
 )
 
 type LikeRequest struct {
@@ -10,9 +11,9 @@ type LikeRequest struct {
 	UserId  uint64
 }
 
-func (lr *LikeRequest) CreateLike() aggregate.Like {
-	return aggregate.Like{
-		Badge:  vo.Badge{Id: lr.BadgeId},
-		UserId: vo.User{Id: lr.UserId},
+func (lr *LikeRequest) CreateLike() like.Like {
+	return like.Like{
+		Badge:  badge.Badge{Id: lr.BadgeId},
+		UserId: user.User{Id: lr.UserId},
 	}
 }

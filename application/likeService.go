@@ -2,21 +2,20 @@ package application
 
 import (
 	"likeIt/application/dto"
-	"likeIt/domain/aggregate"
-	"likeIt/domain/aggregate/vo"
-	"likeIt/domain/repository"
+	"likeIt/domain/badge"
+	"likeIt/domain/like"
 )
 
 type likeService struct {
-	likeRepository repository.LikeRepository
+	likeRepository like.LikeRepository
 }
 
 type LikeServiceInterface interface {
 	Like(like *dto.LikeRequest) (dto.LikeResponse, error)
-	Likes(likes []aggregate.Like) (int, error)
-	UnLike(like aggregate.Like) error
-	UnLikes(likes []aggregate.Like) (int, error)
-	GetLikeCountByBadge(badge *vo.Badge) (dto.LikeResponse, error)
+	Likes(likes []like.Like) (int, error)
+	UnLike(like like.Like) error
+	UnLikes(likes []like.Like) (int, error)
+	GetLikeCountByBadge(badge *badge.Badge) (dto.LikeResponse, error)
 	GetLikeByUser(userId uint64) (bool, error)
 }
 
@@ -38,22 +37,22 @@ func (l likeService) Like(lr *dto.LikeRequest) (dto.LikeResponse, error) {
 	return dto.LikeResponse{Success: true, Like: cnt}, nil
 }
 
-func (l likeService) Likes(likes []aggregate.Like) (int, error) {
+func (l likeService) Likes(likes []like.Like) (int, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l likeService) UnLike(like aggregate.Like) error {
+func (l likeService) UnLike(like like.Like) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l likeService) UnLikes(likes []aggregate.Like) (int, error) {
+func (l likeService) UnLikes(likes []like.Like) (int, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (l likeService) GetLikeCountByBadge(badge *vo.Badge) (dto.LikeResponse, error) {
+func (l likeService) GetLikeCountByBadge(badge *badge.Badge) (dto.LikeResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
