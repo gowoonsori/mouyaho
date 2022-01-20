@@ -26,13 +26,13 @@ func (bs badgeService) GetBadge(lr *dto.LikeRequest) (dto.BadgeInfoResponse, err
 	l := bs.lr.FindByBadgeIdAndUserId(b.Id, lr.UserId)
 	if l.IsEmpty() {
 		return dto.BadgeInfoResponse{
-			Like:   b.LikeCount,
+			Like:  	b.CountLike(),
 			IsLike: false,
 		}, nil
 	}
 
 	return dto.BadgeInfoResponse{
-		Like:   b.LikeCount,
-		IsLike: true,
+		Like:   b.CountLike(),
+		IsLike:	b.IsLike(l.Id),
 	}, nil
 }

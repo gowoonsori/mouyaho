@@ -1,13 +1,12 @@
 package user
 
-import "likeIt/domain/badge"
-
 type UserId uint64
 
 type User struct {
-	Id UserId
+	Id   UserId
+	Name string
 }
 
-func New(id UserId, likes []badge.BadgeId) *User {
-	return &User{Id: id}
+func NewUser(id UserId, name string) *User {
+	return &User{Id: id, Name: name}
 }
