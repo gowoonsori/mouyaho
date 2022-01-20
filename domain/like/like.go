@@ -29,3 +29,7 @@ func (l *Like) DeleteLiker(id user.UserId) {
 func (l *Like) GetLikerCount() int {
 	return len(l.Likers)
 }
+
+func (l *Like) IsEmpty() bool {
+	return l.Id == 0 && l.BadgeId == 0 && len(l.Likers) == 0
+}
