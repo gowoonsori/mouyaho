@@ -4,10 +4,18 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"likeIt/domain/badge"
-	"likeIt/domain/user"
-	"likeIt/infrastructure/model"
 	"strings"
 )
+
+type BadgeModel struct {
+	gorm.Model
+	Id        badge.BadgeId `gorm:"primaryKey;column:id;auto_increment;" json:"id"`
+	Url       string        `gorm:"not null;column:url'" json:"url"`
+	Encoded   string        `gorm:"index;not null;column:encoded'" json:"encoded"`
+	LikeCount int           `gorm:"int;column:like_cnt" json:"like_cnt"`
+	CreatedAt int64         `gorm:"autoCreateTime:milli"`
+	UpdatedAt int64         `gorm:"autoUpdateTime:milli"`
+}
 
 var _ badge.Repository = &BadgeRepository{}
 
@@ -16,7 +24,13 @@ type BadgeRepository struct {
 }
 
 func (br BadgeRepository) Save(b *badge.Badge) (*badge.Badge, error) {
-	err := br.db.Debug().Create(&b).Error
+	bm := &BadgeModel{
+		Url:       b.Url,
+		Encoded:   b.Encoded,
+		LikeCount: b.LikeCount,
+	}
+
+	err := br.db.Debug().Create(&bm).Error
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
 			return nil, errors.New("badge already exists")
@@ -28,17 +42,16 @@ func (br BadgeRepository) Save(b *badge.Badge) (*badge.Badge, error) {
 }
 
 func (br BadgeRepository) FindById(id badge.BadgeId) (*badge.Badge, error) {
-	var b model.Badge
+	var bm BadgeModel
 
-	err := br.db.Debug().Preload("Users").Where("id = ?", id).Take(&b).Error
-	if err != nil {
-		return nil, err
+	DB := br.db.Select("b.*, cnt(l.id) as like_cnt").
+		Table("badge as b").
+		Where("b.id = ?", id).
+		Joins("left join like as l on l.badge_id = b.id").Find(&bm)
+
+	if DB.Error != nil {
+		return nil, DB.Error
 	}
 
-	var likers []user.UserId
-	for _, val := range b.Likers {
-		likers = append(likers, val.GetId())
-	}
-
-	return badge.NewBadge(b.Id, b.Url, b.Encoded, likers), nil
+	return badge.New(bm.Id, bm.Url, bm.Encoded, bm.LikeCount), nil
 }
