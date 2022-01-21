@@ -1,25 +1,26 @@
 package badge
 
-import "likeIt/domain/like"
+import (
+	"likeIt/domain/react"
+	"likeIt/domain/user"
+)
 
 type BadgeId uint64
-type ns struct{}
 
 type Badge struct {
-	Id      BadgeId
-	Url     string
-	Encoded string
-	Likes   map[like.LikeId]ns
+	id        BadgeId
+	url       string
+	badgeInfo BadgeInfo
 }
 
-func New(id BadgeId, url string, encoded string) *Badge {
-	return &Badge{Id: id, Url: url, Encoded: encoded}
+func New(id BadgeId, url string) *Badge {
+	return &Badge{id: id, url: url}
 }
 
-func (b *Badge) IsLike(id like.LikeId) bool {
-	return b.Likes[id] != ns{}
+func (b *Badge) ReactBy(userId user.UserId) *react.React {
+	return react.ByOn(userId, b.id)
 }
 
-func (b *Badge) CountLike() int {
-	return len(b.Likes)
+func (b *Badge) UnReactBy(userId user.UserId) *react.React {
+	return react.ByOn(userId, b.id)
 }
