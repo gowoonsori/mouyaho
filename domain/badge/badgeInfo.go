@@ -9,8 +9,6 @@ const (
 )
 
 type BadgeInfo struct {
-	FontType FontType
-
 	LeftText            string
 	LeftTextColor       string
 	LeftBackgroundColor string
