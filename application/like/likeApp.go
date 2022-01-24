@@ -1,14 +1,14 @@
 package like
 
 import (
+	"likeIt/domain"
 	"likeIt/domain/badge"
 	"likeIt/domain/react"
-	"likeIt/domain/user"
 )
 
 type serviceInterface interface {
-	Like(url string, userId user.UserId) Info
-	UnLike(url string, userId user.UserId) Info
+	Like(url string, userId domain.UserId) Info
+	UnLike(url string, userId domain.UserId) Info
 }
 
 type Service struct {
@@ -16,14 +16,11 @@ type Service struct {
 	rr react.Repository
 }
 
-func (s *Service) Like(url string, userId user.UserId) Info {
-	b,err := s.br.FindByUrl(url)
+func (s *Service) Like(url string, userId domain.UserId) Info {
+	b, err := s.br.FindByUrl(url)
 }
 
-func (s *Service) UnLike(url string, userId user.UserId) Info {
+func (s *Service) UnLike(url string, userId domain.UserId) Info {
 	//TODO implement me
 	panic("implement me")
 }
-
-
-

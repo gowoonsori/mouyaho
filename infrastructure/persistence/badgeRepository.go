@@ -3,26 +3,27 @@ package persistence
 import (
 	"errors"
 	"gorm.io/gorm"
+	"likeIt/domain"
 	"likeIt/domain/badge"
 	"strings"
 )
 
 type BadgeModel struct {
 	gorm.Model
-	Id        badge.BadgeId `gorm:"primaryKey;column:id;auto_increment;" json:"id"`
-	Url       string        `gorm:"not null;column:url'" json:"url"`
-	Encoded   string        `gorm:"index;not null;column:encoded'" json:"encoded"`
-	CreatedAt int64         `gorm:"autoCreateTime:milli"`
-	UpdatedAt int64         `gorm:"autoUpdateTime:milli"`
+	Id        domain.BadgeId `gorm:"primaryKey;column:id;auto_increment;" json:"id"`
+	Url       string         `gorm:"not null;column:url'" json:"url"`
+	Encoded   string         `gorm:"index;not null;column:encoded'" json:"encoded"`
+	CreatedAt int64          `gorm:"autoCreateTime:milli"`
+	UpdatedAt int64          `gorm:"autoUpdateTime:milli"`
 }
 
-var _ badge.Repository = &BadgeRepository{}
+var _ domain.BadgeRepository = &BadgeRepository{}
 
 type BadgeRepository struct {
 	db *gorm.DB
 }
 
-func (br BadgeRepository) Save(b *badge.Badge) (*badge.Badge, error) {
+func (br BadgeRepository) Save(b *domain.Badge) (*domain.Badge, error) {
 	bm := &BadgeModel{
 		Url:     b.Url,
 		Encoded: b.Encoded,
@@ -39,7 +40,7 @@ func (br BadgeRepository) Save(b *badge.Badge) (*badge.Badge, error) {
 	return b, nil
 }
 
-func (br BadgeRepository) FindById(id badge.BadgeId) (*badge.Badge, error) {
+func (br BadgeRepository) FindById(id domain.BadgeId) (*domain.Badge, error) {
 	var bm BadgeModel
 
 	DB := br.db.Debug().First(&bm, id)

@@ -1,22 +1,13 @@
 package badge
 
-const (
-	defaultBadgeHeight = float64(20)
-	defaultIconWidth   = float64(15)
-	defaultIconHeight  = float64(15)
-	defaultIconX       = float64(3)
-	defaultIconY       = float64(2.5)
-)
-
 type BadgeInfo struct {
-	LeftText            string
-	LeftTextColor       string
-	LeftBackgroundColor string
+	Vertical bool
 
-	RightText            string
-	RightTextColor       string
-	RightBackgroundColor string
+	LeftIcon  LeftIcon
+	RightIcon RightIcon
 
-	XRadius string
-	YRadius string
+	Color  string
+	Width  float64
+	Height float64
+	Radius float64
 }
