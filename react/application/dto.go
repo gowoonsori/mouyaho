@@ -1,4 +1,4 @@
-package like
+package application
 
 type Info struct {
 	LikeCount int

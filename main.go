@@ -1,1 +1,1 @@
-package likeIt
+package main
