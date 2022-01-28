@@ -7,7 +7,7 @@ type User struct {
 	Name string
 }
 
-type Repository interface {
+type UserRepository interface {
 	Save(b *User) (*User, error)
 	FindById(id UserId) (*User, error)
 }

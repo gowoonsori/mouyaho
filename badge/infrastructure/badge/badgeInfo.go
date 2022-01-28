@@ -41,9 +41,9 @@ type likeBadgeWriter struct {
 }
 
 func NewLikeBadgeWriter() (Writer, error) {
-	tb, err := template.New("react-badge").Parse(likeBadgeTemplate)
+	tb, err := template.New("like-badge").Parse(likeBadgeTemplate)
 	if err != nil {
-		return nil, fmt.Errorf("[err] NewWriter %w", err)
+		return nil, fmt.Errorf("[err] LikeBadgeNewWriter %w", err)
 	}
 
 	writer := &likeBadgeWriter{
@@ -53,88 +53,70 @@ func NewLikeBadgeWriter() (Writer, error) {
 }
 
 func (bw *likeBadgeWriter) RenderBadge(b LikeBadge) ([]byte, error) {
-	lb := &likeBadge{FontFamily: fontFamily, FontSize: fontSize}
-
-	//height
-	height := defaultBadgeHeight
-
-	//Rx, Ry
-	lb.Rx = XRadius
-	lb.Ry = YRadius
-
-	// set react
-	lb.React = iconBadge{
-		Rect: rect{
-			Color: color(b.BackgroundColor),
-			Bound: bound{
-				Width:  defaultIconRectWidth,
-				Height: height,
-				X:      0,
-				Y:      0,
-			}},
-		Icon: icon{
-			Color: color(b.LikeIconColor),
-			Bound: bound{
-				Width:  0,
-				Height: 0,
-				X:      15,
-				Y:      7,
-			},
-		},
-	}
-
-	// set text
 	drawer := getArialDrawer()
+	height := defaultBadgeHeight
 	textWidth := drawer.measureString(b.CountText)
-	lb.Count = textBadge{
-		Rect: rect{
-			Color: color(b.BackgroundColor),
-			Bound: bound{
-				Width:  defaultTxtRectWidth + textWidth,
-				Height: height,
-				X:      defaultIconRectWidth,
-				Y:      0,
-			}},
-		Text: text{
-			Msg:   b.CountText,
-			Color: color(b.CountTextColor),
-			Bound: bound{
-				Width:  0,
-				Height: 0,
-				X:      textWidth/2.0 + defaultIconRectWidth,
-				Y:      defaultTextY,
-			}},
-	}
 
-	// set share
-	lb.Share = iconBadge{
-		Rect: rect{Color: color(b.BackgroundColor),
-			Bound: bound{
-				Width:  defaultIconRectWidth,
-				Height: height,
-				X:      defaultIconRectWidth + textWidth + defaultTxtRectWidth,
-				Y:      0,
-			}},
-		Icon: icon{
-			Color: color(b.ShareIconColor),
-			Bound: bound{
-				Width:  0,
-				Height: 0,
-				X:      9 + textWidth - defaultTextWidth,
-				Y:      -11,
+	lb := &likeBadge{
+		FontFamily: fontFamily,
+		FontSize:   fontSize,
+		React: iconBadge{
+			Rect: rect{Color: color(b.BackgroundColor),
+				Bound: bound{
+					Width:  defaultIconRectWidth,
+					Height: height,
+					X:      0,
+					Y:      0,
+				}},
+			Icon: icon{Color: color(b.LikeIconColor),
+				Bound: bound{
+					Width:  0,
+					Height: 0,
+					X:      15,
+					Y:      7,
+				},
 			},
 		},
+		Count: textBadge{
+			Rect: rect{Color: color(b.BackgroundColor),
+				Bound: bound{
+					Width:  defaultTxtRectWidth + textWidth,
+					Height: height,
+					X:      defaultIconRectWidth,
+					Y:      0,
+				}},
+			Text: text{Msg: b.CountText, Color: color(b.CountTextColor),
+				Bound: bound{
+					Width:  0,
+					Height: 0,
+					X:      textWidth/2.0 + defaultIconRectWidth,
+					Y:      defaultTextY,
+				}},
+		},
+		Share: iconBadge{
+			Rect: rect{Color: color(b.BackgroundColor),
+				Bound: bound{
+					Width:  defaultIconRectWidth,
+					Height: height,
+					X:      defaultIconRectWidth + textWidth + defaultTxtRectWidth,
+					Y:      0,
+				}},
+			Icon: icon{Color: color(b.ShareIconColor),
+				Bound: bound{
+					Width:  0,
+					Height: 0,
+					X:      9 + textWidth - defaultTextWidth,
+					Y:      -11,
+				},
+			},
+		},
+		Width:   defaultIconRectWidth + defaultTxtRectWidth + textWidth + defaultIconRectWidth,
+		Height:  defaultBadgeHeight,
+		Rx:      XRadius,
+		Ry:      YRadius,
+		IsReact: isReactClassName[b.IsReact],
+		Opacity: b2i[!b.IsTransparency],
 	}
-
-	// set width, height
-	lb.Width = defaultIconRectWidth + defaultTxtRectWidth + textWidth + defaultIconRectWidth
-	lb.Height = defaultBadgeHeight
-
-	// set isReact
-	lb.IsReact = isReactClassName[b.IsReact]
-
-	// set opacity
-	lb.Opacity = b2i[!b.IsTransparency]
 
 	buf := &bytes.Buffer{}
 	if err := bw.likeBadgeTemplate.Execute(buf, lb); err != nil {

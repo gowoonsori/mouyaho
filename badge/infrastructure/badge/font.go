@@ -16,7 +16,7 @@ const (
 	fontSize        = 11
 	extraVeraSansDx = 13
 	fontFamily      = "Arial,Sans,Verdana,Helvetica,sans-serif"
-	fontsPath       = "../fonts/"
+	fontsPath       = "/Users/user/Documents/GitHub/likeIt/badge/infrastructure/fonts/"
 )
 
 var (
