@@ -16,10 +16,6 @@ type React struct {
 	userId  UserId
 }
 
-func (l *React) IsEmpty() bool {
-	return l.id == 0 && l.badgeId == 0 && l.userId == 0
-}
-
 func ByOn(userId UserId, badgeId BadgeId) *React {
 	return &React{
 		badgeId: badgeId,

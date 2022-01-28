@@ -1,6 +1,6 @@
 package domain
 
-type UserId uint64
+type UserId string
 
 type User struct {
 	Id   UserId

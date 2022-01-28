@@ -1,7 +1,7 @@
 package application
 
 import (
-	"context"
+	"fmt"
 	"likeIt/badge/infrastructure/badge"
 	"likeIt/domain"
 	"net/url"
@@ -13,25 +13,57 @@ type LikeBadgeService struct {
 	rr domain.ReactRepository
 }
 
-func (bu LikeBadgeService) renderLikeBadge(reqUrl string, isLike bool, likeCount int) ([]byte, error) {
-	qs, err := bu.ParsingUrl(reqUrl)
+func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) *domain.Badge {
+	//query string parsing
+	qs, err := ParsingUrl(reqUrl)
 	if err != nil {
-		return []byte{}, err
+		return nil
+	}
+	urlInfo := CreateUrlInfoFromMap(qs)
+	u := urlInfo.Url
+
+	//like count get
+	likeCount := bu.rr.FindCountByBadgeId(domain.BadgeId(u))
+
+	//isLike get
+	il := bu.rr.FindByBadgeIdAndUserId(domain.BadgeId(u), domain.UserId(userId))
+	var isLike bool
+	if il != nil {
+		isLike = true
 	}
 
-	it, err := strconv.ParseBool(qs["transparency"])
+	//badge file get
+	id := domain.BadgeId(urlInfo.CreateBadgeUrl())
+	b, err := bu.br.FindById(id)
 	if err != nil {
-		return []byte{}, err
+		return nil
 	}
-	
+	if b != nil {
+		return domain.NewBadge(b.Id(), b.File())
+	}
+
+	//if file not exist, save after redering
+	f, err := renderLikeBadge(*urlInfo, isLike, likeCount)
+	if err != nil {
+		return nil
+	}
+	b = domain.NewBadge(id, f)
+	if _, err = bu.br.Save(b); err != nil {
+		fmt.Println(err)
+	}
+
+	return b
+}
+
+func renderLikeBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
 	bi := &badge.LikeBadge{
 		IsReact:         isLike,
-		LikeIconColor:   qs["like_color"],
+		LikeIconColor:   urlInfo.LikeIconColor,
 		CountText:       strconv.Itoa(likeCount),
-		CountTextColor:  qs["text_color"],
-		ShareIconColor:  qs["share_color"],
-		BackgroundColor: qs["bg"],
-		IsTransparency:  it,
+		CountTextColor:  urlInfo.CountTextColor,
+		ShareIconColor:  urlInfo.ShareIconColor,
+		BackgroundColor: urlInfo.BackgroundColor,
+		IsTransparency:  urlInfo.IsTransparency,
 	}
 
 	wr, err := badge.NewLikeBadgeWriter()
@@ -47,30 +79,7 @@ func (bu LikeBadgeService) renderLikeBadge(reqUrl string, isLike bool, likeCount
 	return svg, nil
 }
 
-func (bu LikeBadgeService) GetBadge(ctx context.Context, reqUrl string) *domain.Badge {
-	cu := ctx.Value("lid")
-	userId := cu.(domain.UserId)
-
-	//isLike 조회
-	il := bu.rr.FindByBadgeIdAndUserId(1, userId)
-	var isLike bool
-	if il != nil {
-		isLike = true
-	}
-
-	//like count 조회
-	likeCount := bu.rr.FindCountByBadgeId(1)
-
-	//badge render
-	f, err := bu.renderLikeBadge(reqUrl, isLike, likeCount)
-	if err != nil {
-		panic(err)
-	}
-
-	return domain.NewBadge(reqUrl, userId, f, likeCount, isLike)
-}
-
-func (bu LikeBadgeService) ParsingUrl(reqUrl string) (map[string]string, error) {
+func ParsingUrl(reqUrl string) (map[string]string, error) {
 	result := make(map[string]string)
 
 	p, _ := url.Parse(reqUrl)
@@ -79,7 +88,6 @@ func (bu LikeBadgeService) ParsingUrl(reqUrl string) (map[string]string, error) 
 	if err != nil {
 		return result, err
 	}
-
 	for k, v := range m {
 		result[k] = v[0]
 	}

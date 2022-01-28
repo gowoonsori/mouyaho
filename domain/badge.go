@@ -1,38 +1,38 @@
 package domain
 
-import "context"
-
-type BadgeId uint64
+type BadgeId string //url 이 BadgeId
 
 type BadgeService interface {
-	renderLikeBadge(url string) ([]byte, error)
-	GetBadge(ctx context.Context, url string) *Badge
-	ParsingUrl(url string) (map[string]string, error)
+	GetBadge(id UserId, url string) *Badge
+	renderBadge() ([]byte, error)
 }
 
 type BadgeRepository interface {
 	Save(b *Badge) (*Badge, error)
 	FindById(id BadgeId) (*Badge, error)
-	FindByUrl(url string) (*Badge, error)
 }
 
 type Badge struct {
-	id       BadgeId
-	url      string
-	callUser UserId
-	file     []byte
-	reactCnt int
-	isReact  bool
+	id   BadgeId
+	file []byte
 }
 
-func NewBadge(url string, callUser UserId, file []byte, reactCnt int, isReact bool) *Badge {
-	return &Badge{url: url, callUser: callUser, file: file, reactCnt: reactCnt, isReact: isReact}
+func NewBadge(id BadgeId, file []byte) *Badge {
+	return &Badge{id: id, file: file}
 }
 
-func (b Badge) ReactBy() *React {
-	return ByOn(b.callUser, b.id)
+func (b Badge) ReactBy(user UserId) *React {
+	return ByOn(user, b.id)
 }
 
-func (b Badge) UnReactBy() *React {
-	return ByOn(b.callUser, b.id)
+func (b Badge) UnReactBy(user UserId) *React {
+	return ByOn(user, b.id)
+}
+
+func (b Badge) Id() BadgeId {
+	return b.id
+}
+
+func (b Badge) File() []byte {
+	return b.file
 }

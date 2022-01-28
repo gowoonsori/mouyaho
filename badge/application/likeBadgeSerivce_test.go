@@ -64,8 +64,41 @@ func Test_Render_Like_Badge_Success(t *testing.T) {
 	expectSvg, _ := wr.RenderBadge(*expectBadge)
 
 	//when
-	lb := LikeBadgeService{}
-	gotSvg, err := lb.renderLikeBadge(reqUrl, isLike, likeCount)
+	qs, err := ParsingUrl(reqUrl)
+	urlInfo := CreateUrlInfoFromMap(qs)
+	gotSvg, err := renderLikeBadge(*urlInfo, isLike, likeCount)
+
+	//then
+	if err != nil {
+		t.Error(err)
+	}
+	tests.AssertEqual(t, gotSvg, expectSvg)
+}
+
+func Test_Render_Like_Badge_Another_Query(t *testing.T) {
+	//given
+	u := "https://www.naver.com"
+	bg := "#eee"
+	likeColor := "red"
+
+	reqUrl := fmt.Sprintf("https://gowoon.com/api/likeIt?url=%s&bg=%s&like_color=%s&abc=123&cd=123",
+		u, url.QueryEscape(bg), url.QueryEscape(likeColor))
+	isLike := true
+	likeCount := 12345
+
+	expectBadge := &badge.LikeBadge{
+		IsReact:         isLike,
+		LikeIconColor:   likeColor,
+		CountText:       strconv.Itoa(likeCount),
+		BackgroundColor: bg,
+	}
+	wr, _ := badge.NewLikeBadgeWriter()
+	expectSvg, _ := wr.RenderBadge(*expectBadge)
+
+	//when
+	qs, err := ParsingUrl(reqUrl)
+	urlInfo := CreateUrlInfoFromMap(qs)
+	gotSvg, err := renderLikeBadge(*urlInfo, isLike, likeCount)
 
 	//then
 	if err != nil {

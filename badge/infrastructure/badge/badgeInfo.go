@@ -6,7 +6,7 @@ import (
 	"html/template"
 )
 
-var b2i = map[bool]int{false: 0, true: 1}
+var B2i = map[bool]int{false: 0, true: 1}
 var isReactClassName = map[bool]string{false: "react_off", true: "react_on"}
 
 const (
@@ -17,6 +17,11 @@ const (
 	YRadius              = 15
 	defaultTextY         = 18
 	defaultTextWidth     = 19
+	defaultLikeColor     = "red"
+	defaultTextColor     = "black"
+	defaultShareColor    = "black"
+	defaultText          = "0"
+	defaultBg            = "#eee"
 )
 
 type Writer interface {
@@ -57,6 +62,7 @@ func (bw *likeBadgeWriter) RenderBadge(b LikeBadge) ([]byte, error) {
 	height := defaultBadgeHeight
 	textWidth := drawer.measureString(b.CountText)
 
+	b = initLikeBadge(b)
 	lb := &likeBadge{
 		FontFamily: fontFamily,
 		FontSize:   fontSize,
@@ -115,7 +121,7 @@ func (bw *likeBadgeWriter) RenderBadge(b LikeBadge) ([]byte, error) {
 		Rx:      XRadius,
 		Ry:      YRadius,
 		IsReact: isReactClassName[b.IsReact],
-		Opacity: b2i[!b.IsTransparency],
+		Opacity: B2i[!b.IsTransparency],
 	}
 
 	buf := &bytes.Buffer{}
@@ -123,4 +129,23 @@ func (bw *likeBadgeWriter) RenderBadge(b LikeBadge) ([]byte, error) {
 		return nil, fmt.Errorf("[err] RenderLikeBadge %w", err)
 	}
 	return buf.Bytes(), nil
+}
+
+func initLikeBadge(b LikeBadge) LikeBadge {
+	if b.LikeIconColor == "" {
+		b.LikeIconColor = defaultLikeColor
+	}
+	if b.ShareIconColor == "" {
+		b.ShareIconColor = defaultShareColor
+	}
+	if b.CountTextColor == "" {
+		b.CountTextColor = defaultTextColor
+	}
+	if b.BackgroundColor == "" {
+		b.BackgroundColor = defaultBg
+	}
+	if b.CountText == "" {
+		b.CountText = "0"
+	}
+	return b
 }
