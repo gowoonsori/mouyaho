@@ -43,11 +43,6 @@ func CreateUrlInfoFromMap(queryStrings map[string]string) *UrlInfo {
 func (u *UrlInfo) CreateBadgeUrl() string {
 	var b bytes.Buffer
 	b.WriteString(u.Url)
-	b.WriteString("?")
-	b.WriteString(u.CountTextColor)
-	b.WriteString(u.BackgroundColor)
-	b.WriteString(u.LikeIconColor)
-	b.WriteString(u.ShareIconColor)
-	b.WriteString(strconv.FormatBool(u.IsTransparency))
+
 	return b.String()
 }
