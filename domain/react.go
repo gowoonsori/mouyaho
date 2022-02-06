@@ -2,6 +2,7 @@ package domain
 
 type ReactId uint64
 
+//go:generate mockery --name ReactRepository --case underscore
 type ReactRepository interface {
 	Save(b *React) (*React, error)
 	FindByBadgeId(badgeId BadgeId) []React

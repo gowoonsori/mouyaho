@@ -7,6 +7,7 @@ type BadgeService interface {
 	renderBadge() ([]byte, error)
 }
 
+//go:generate mockery --name BadgeRepository --case underscore
 type BadgeRepository interface {
 	Save(b *Badge) (*Badge, error)
 	FindById(id BadgeId) (*Badge, error)
