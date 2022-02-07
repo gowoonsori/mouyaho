@@ -112,7 +112,7 @@ func Test_Render_Like_Badge_Another_Query(t *testing.T) {
 	tests.AssertEqual(t, gotSvg, expectSvg)
 }
 
-func Test_Get_Badge_Basic(t *testing.T) {
+func Test_Get_Badge_url만있는경우(t *testing.T) {
 	//given
 	br, rr := initMockRepository()
 	url := "https://www.likeIt.com/api/badge"
@@ -125,7 +125,56 @@ func Test_Get_Badge_Basic(t *testing.T) {
 	br.On("FindById", domain.BadgeId(badgeId)).Return(nil, nil)
 	br.On("Save", mock.Anything).Return(nil, nil)
 
-	expectBadge := domain.NewBadge(domain.BadgeId(badgeId), []byte(strings.TrimSpace(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="99" height="30">
+	expectBadge := domain.NewBadge(domain.BadgeId(badgeId), getBadge(false, "", 0, "", "", "", false))
+
+	//when
+	ls := LikeBadgeService{
+		br: br,
+		rr: rr,
+	}
+	b := ls.GetBadge(userId, reqUrl)
+
+	//then
+	assert.Equal(t, expectBadge, b)
+}
+
+func Test_Get_Badge_다른속성있는경우(t *testing.T) {
+	//given
+	br, rr := initMockRepository()
+	url := "https://www.likeIt.com/api/badge"
+	badgeId := "https://gowoonsori.com"
+	likeColor := "#2f3f3f"
+	bg := "#111111"
+	transparency := true
+	userId := "QD12LAD12LKAsd12DA1dls321sda"
+	reqUrl := url + "?url=" + badgeId + "&like_color=" + likeColor + "&bg=" + bg + "&transparency=" + strconv.FormatBool(transparency)
+
+	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(0)
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
+	br.On("FindById", domain.BadgeId(badgeId)).Return(nil, nil)
+	br.On("Save", mock.Anything).Return(nil, nil)
+
+	expectBadge := domain.NewBadge(domain.BadgeId(badgeId), getBadge(false, likeColor, 0, "", "", bg, transparency))
+
+	//when
+	ls := LikeBadgeService{
+		br: br,
+		rr: rr,
+	}
+	b := ls.GetBadge(userId, reqUrl)
+
+	//then
+	assert.Equal(t, expectBadge, b)
+}
+
+func initMockRepository() (br *mocks.BadgeRepository, rr *mocks.ReactRepository) {
+	br = new(mocks.BadgeRepository)
+	rr = new(mocks.ReactRepository)
+	return
+}
+
+func getDefaultBadge() []byte {
+	return []byte(strings.TrimSpace(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="99" height="30">
       <linearGradient id="smooth" x2="0" y2="100%">
         <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
         <stop offset="1" stop-opacity=".1"/>
@@ -164,21 +213,29 @@ func Test_Get_Badge_Basic(t *testing.T) {
           cursor:pointer;
         }
       </style>
-    </svg>`)))
-
-	//when
-	ls := LikeBadgeService{
-		br: br,
-		rr: rr,
-	}
-	b := ls.GetBadge(userId, reqUrl)
-
-	//then
-	assert.Equal(t, expectBadge, b)
+    </svg>`))
 }
 
-func initMockRepository() (br *mocks.BadgeRepository, rr *mocks.ReactRepository) {
-	br = new(mocks.BadgeRepository)
-	rr = new(mocks.ReactRepository)
-	return
+func getBadge(isReact bool, likeColor string, countText int, textColor string, shareColor string, bg string, transparency bool) []byte {
+	b := &badge.LikeBadge{
+		IsReact:         isReact,
+		LikeIconColor:   likeColor,
+		CountText:       strconv.Itoa(countText),
+		CountTextColor:  textColor,
+		ShareIconColor:  shareColor,
+		BackgroundColor: bg,
+		IsTransparency:  transparency,
+	}
+	wr, err := badge.NewLikeBadgeWriter()
+	if err != nil {
+		panic(err)
+	}
+
+	//when
+	svg, err := wr.RenderBadge(*b)
+	if err != nil {
+		panic(err)
+	}
+
+	return svg
 }
