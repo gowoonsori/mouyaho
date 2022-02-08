@@ -2,15 +2,11 @@ package badge
 
 import (
 	"gorm.io/gorm/utils/tests"
-	"io/ioutil"
 	"testing"
 )
 
 func Test_Arial_Font_read(t *testing.T) {
-	_, err := ioutil.ReadFile(*arialFontFile)
-	if err != nil {
-		t.Error(err)
-	}
+	getArialDrawer()
 }
 
 func Test_Arial_Font_Measure(t *testing.T) {

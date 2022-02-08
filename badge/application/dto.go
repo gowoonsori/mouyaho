@@ -11,7 +11,7 @@ type UrlInfo struct {
 	CountTextColor  string
 	ShareIconColor  string
 	BackgroundColor string
-	IsTransparency  bool
+	IsClear         bool
 }
 
 func CreateUrlInfoFromMap(queryStrings map[string]string) *UrlInfo {
@@ -32,9 +32,9 @@ func CreateUrlInfoFromMap(queryStrings map[string]string) *UrlInfo {
 	if v, ok := queryStrings["bg"]; ok {
 		result.BackgroundColor = v
 	}
-	if v, ok := queryStrings["transparency"]; ok {
+	if v, ok := queryStrings["clear"]; ok {
 		if b, err := strconv.ParseBool(v); err == nil {
-			result.IsTransparency = b
+			result.IsClear = b
 		}
 	}
 	return result

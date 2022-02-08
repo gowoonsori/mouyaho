@@ -14,16 +14,16 @@ type ReactRepository interface {
 type React struct {
 	id      ReactId
 	badgeId BadgeId
-	userId  UserId
+	reader  Reader
 }
 
-func NewReact(id ReactId, badgeId BadgeId, userId UserId) *React {
-	return &React{id: id, badgeId: badgeId, userId: userId}
+func NewReact(id ReactId, badgeId BadgeId, reader Reader) *React {
+	return &React{id: id, badgeId: badgeId, reader: reader}
 }
 
 func ByOn(userId UserId, badgeId BadgeId) *React {
 	return &React{
 		badgeId: badgeId,
-		userId:  userId,
+		reader:  *NewReader(userId),
 	}
 }

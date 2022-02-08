@@ -1,19 +1,17 @@
 package application
 
 import (
-	"fmt"
-	"likeIt/badge/infrastructure/badge"
-	"likeIt/domain"
+	"likeIt/badge/domain"
+	badgeImpl "likeIt/badge/infrastructure/badge"
 	"net/url"
 	"strconv"
 )
 
 type LikeBadgeService struct {
-	br domain.BadgeRepository
 	rr domain.ReactRepository
 }
 
-func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) *domain.Badge {
+func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) []byte {
 	//query string parsing
 	qs, err := parsingUrl(reqUrl)
 	if err != nil {
@@ -32,41 +30,27 @@ func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) *domain.Badge 
 		isLike = true
 	}
 
-	//badge file get
-	id := domain.BadgeId(urlInfo.CreateBadgeUrl())
-	b, err := bu.br.FindById(id)
+	//file redering
+	f, err := bu.renderBadge(*urlInfo, isLike, likeCount)
 	if err != nil {
-		return nil
-	}
-	if b != nil {
-		return domain.NewBadge(b.Id(), b.File())
+		return []byte{}
 	}
 
-	//if file not exist, save after redering
-	f, err := renderLikeBadge(*urlInfo, isLike, likeCount)
-	if err != nil {
-		return nil
-	}
-	b = domain.NewBadge(id, f)
-	if _, err = bu.br.Save(b); err != nil {
-		fmt.Println(err)
-	}
-
-	return b
+	return f
 }
 
-func renderLikeBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
-	bi := &badge.LikeBadge{
-		IsReact:         isLike,
-		LikeIconColor:   urlInfo.LikeIconColor,
-		CountText:       strconv.Itoa(likeCount),
-		CountTextColor:  urlInfo.CountTextColor,
-		ShareIconColor:  urlInfo.ShareIconColor,
-		BackgroundColor: urlInfo.BackgroundColor,
-		IsTransparency:  urlInfo.IsTransparency,
-	}
+func (bu LikeBadgeService) renderBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
+	bi := domain.NewBadgeInfo(
+		isLike,
+		urlInfo.LikeIconColor,
+		strconv.Itoa(likeCount),
+		urlInfo.CountTextColor,
+		urlInfo.ShareIconColor,
+		urlInfo.BackgroundColor,
+		urlInfo.IsClear,
+	)
 
-	wr, err := badge.NewLikeBadgeWriter()
+	wr, err := badgeImpl.NewLikeBadgeWriter()
 	if err != nil {
 		return []byte{}, err
 	}

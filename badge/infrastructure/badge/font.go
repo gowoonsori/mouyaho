@@ -16,10 +16,10 @@ const (
 	fontSize        = 11
 	extraVeraSansDx = 13
 	fontFamily      = "Arial,Sans,Verdana,Helvetica,sans-serif"
-	fontsPath       = "/Users/user/Documents/GitHub/likeIt/badge/infrastructure/fonts/"
 )
 
 var (
+	fontsPath     = "/Users/gowoo/OneDrive/Documents/GitHub" + "/likeIt/badge/infrastructure/fonts/"
 	arialFontFile = flag.String("fontfile", fontsPath+"ARIAL.TTF", "filename of the ttf font")
 	arialDrawer   = initArialFontDrawer()
 )

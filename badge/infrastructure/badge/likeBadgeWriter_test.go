@@ -2,6 +2,7 @@ package badge
 
 import (
 	"gorm.io/gorm/utils/tests"
+	"likeIt/badge/domain"
 	"strings"
 	"testing"
 )
@@ -49,15 +50,15 @@ func Test_Render_LikeBadge(t *testing.T) {
       </style>
     </svg>`))
 
-	b := &LikeBadge{
-		IsReact:         false,
-		LikeIconColor:   "red",
-		CountText:       "0",
-		CountTextColor:  "black",
-		ShareIconColor:  "red",
-		BackgroundColor: "#eee",
-		IsTransparency:  false,
-	}
+	b := domain.NewBadgeInfo(
+		false,
+		"red",
+		"0",
+		"black",
+		"red",
+		"#eee",
+		false,
+	)
 	wr, err := NewLikeBadgeWriter()
 	if err != nil {
 		panic(err)

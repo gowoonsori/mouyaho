@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	"likeIt/domain"
+	"likeIt/badge/domain"
 )
 
 type RedisBadgeRepository struct {

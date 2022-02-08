@@ -7,19 +7,13 @@ type BadgeService interface {
 	renderBadge() ([]byte, error)
 }
 
-//go:generate mockery --name BadgeRepository --case underscore
-type BadgeRepository interface {
-	Save(b *Badge) (*Badge, error)
-	FindById(id BadgeId) (*Badge, error)
-}
-
 type Badge struct {
-	id   BadgeId
-	file []byte
+	id        BadgeId
+	badgeInfo BadgeInfo
 }
 
-func NewBadge(id BadgeId, file []byte) *Badge {
-	return &Badge{id: id, file: file}
+func NewBadge(id BadgeId, badgeInfo BadgeInfo) *Badge {
+	return &Badge{id: id, badgeInfo: badgeInfo}
 }
 
 func (b Badge) ReactBy(user UserId) *React {
@@ -32,8 +26,4 @@ func (b Badge) UnReactBy(user UserId) *React {
 
 func (b Badge) Id() BadgeId {
 	return b.id
-}
-
-func (b Badge) File() []byte {
-	return b.file
 }
