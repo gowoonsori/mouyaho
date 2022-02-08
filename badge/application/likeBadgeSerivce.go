@@ -15,7 +15,7 @@ type LikeBadgeService struct {
 
 func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) *domain.Badge {
 	//query string parsing
-	qs, err := ParsingUrl(reqUrl)
+	qs, err := parsingUrl(reqUrl)
 	if err != nil {
 		return nil
 	}
@@ -68,18 +68,18 @@ func renderLikeBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error
 
 	wr, err := badge.NewLikeBadgeWriter()
 	if err != nil {
-		panic(err)
+		return []byte{}, err
 	}
 
 	svg, err := wr.RenderBadge(*bi)
 	if err != nil {
-		panic(err)
+		return []byte{}, err
 	}
 
 	return svg, nil
 }
 
-func ParsingUrl(reqUrl string) (map[string]string, error) {
+func parsingUrl(reqUrl string) (map[string]string, error) {
 	result := make(map[string]string)
 
 	p, _ := url.Parse(reqUrl)

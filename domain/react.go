@@ -17,6 +17,10 @@ type React struct {
 	userId  UserId
 }
 
+func NewReact(id ReactId, badgeId BadgeId, userId UserId) *React {
+	return &React{id: id, badgeId: badgeId, userId: userId}
+}
+
 func ByOn(userId UserId, badgeId BadgeId) *React {
 	return &React{
 		badgeId: badgeId,

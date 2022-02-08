@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"strconv"
 )
 
 var B2i = map[bool]int{false: 0, true: 1}
@@ -144,7 +145,7 @@ func initLikeBadge(b LikeBadge) LikeBadge {
 	if b.BackgroundColor == "" {
 		b.BackgroundColor = defaultBg
 	}
-	if b.CountText == "" {
+	if _, err := strconv.Atoi(b.CountText); err != nil {
 		b.CountText = "0"
 	}
 	return b
