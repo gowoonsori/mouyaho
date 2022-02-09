@@ -3,9 +3,9 @@ package application
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"likeIt/badge/domain"
-	"likeIt/badge/domain/mocks"
-	badgeImpl "likeIt/badge/infrastructure/badge"
+	"likeIt/badge/infrastructure/badge"
+	"likeIt/domain"
+	"likeIt/domain/mocks"
 	"net/url"
 	"strconv"
 	"testing"
@@ -47,23 +47,14 @@ func Test_Render_Like_Badge_Success(t *testing.T) {
 	textColor := "#aaa"
 	shareColor := "black"
 	clear := "true"
-
-	reqUrl := fmt.Sprintf("https://gowoon.com/api/likeIt?url=%s&bg=%s&like_color=%s&text_color=%s&share_color=%s&clear=%s",
-		u, url.QueryEscape(bg), url.QueryEscape(likeColor), url.QueryEscape(textColor), url.QueryEscape(shareColor), clear)
 	isLike := true
 	likeCount := 12345
+	reqUrl := fmt.Sprintf("https://gowoon.com/api/likeIt?url=%s&bg=%s&like_color=%s&text_color=%s&share_color=%s&clear=%s",
+		u, url.QueryEscape(bg), url.QueryEscape(likeColor), url.QueryEscape(textColor), url.QueryEscape(shareColor), clear)
 
-	expectBadge := domain.NewBadgeInfo(
-		isLike,
-		likeColor,
-		strconv.Itoa(likeCount),
-		textColor,
-		shareColor,
-		bg,
-		true,
-	)
-	wr, _ := badgeImpl.NewLikeBadgeWriter()
-	expectSvg, _ := wr.RenderBadge(*expectBadge)
+	expectBadge := badge.NewLikeBadge(likeColor, textColor, shareColor, bg, likeCount, isLike, true)
+	wr, _ := badge.NewLikeBadgeWriter()
+	expectSvg, _ := wr.RenderBadge(expectBadge)
 
 	//when
 	qs, err := parsingUrl(reqUrl)
@@ -83,23 +74,14 @@ func Test_Render_Like_Badge_Another_Query(t *testing.T) {
 	u := "https://www.naver.com"
 	bg := "#eee"
 	likeColor := "red"
-
-	reqUrl := fmt.Sprintf("https://gowoon.com/api/likeIt?url=%s&bg=%s&like_color=%s&abc=123&cd=123",
-		u, url.QueryEscape(bg), url.QueryEscape(likeColor))
 	isLike := true
 	likeCount := 12345
+	reqUrl := fmt.Sprintf("https://gowoon.com/api/likeIt?url=%s&bg=%s&like_color=%s&abc=123&cd=123",
+		u, url.QueryEscape(bg), url.QueryEscape(likeColor))
 
-	expectBadge := domain.NewBadgeInfo(
-		isLike,
-		likeColor,
-		strconv.Itoa(likeCount),
-		"",
-		"",
-		bg,
-		false,
-	)
-	wr, _ := badgeImpl.NewLikeBadgeWriter()
-	expectSvg, _ := wr.RenderBadge(*expectBadge)
+	expectBadge := badge.NewLikeBadge(likeColor, "", "", bg, likeCount, isLike, false)
+	wr, _ := badge.NewLikeBadgeWriter()
+	expectSvg, _ := wr.RenderBadge(expectBadge)
 
 	//when
 	qs, err := parsingUrl(reqUrl)
@@ -122,10 +104,10 @@ func Test_GetBadge_url만있는경우_캐싱X(t *testing.T) {
 	userId := "QD12LAD12LKAsd12DA1dls321sda"
 	reqUrl := url + "?url=" + badgeId
 
+	expectBadge := getBadge(false, "", 0, "", "", "", false)
+
 	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(0)
 	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
-
-	expectBadge := getBadge(false, "", 0, "", "", "", false)
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -148,10 +130,10 @@ func Test_GetBadge_다른속성있는경우_캐싱X(t *testing.T) {
 	reqQs := "url=" + url.QueryEscape(badgeId) + "&like_color=" + url.QueryEscape(likeColor) + "&bg=" + url.QueryEscape(bg) + "&clear=" + strconv.FormatBool(clear)
 	reqUrl := apiUrl + "?" + reqQs
 
+	expectBadge := getBadge(false, likeColor, count, "", "", bg, clear)
+
 	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(count)
 	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
-
-	expectBadge := getBadge(false, likeColor, count, "", "", bg, clear)
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -173,11 +155,11 @@ func Test_GetBadge_다른속성있고_Encoding안된경우_캐싱X(t *testing.T)
 	reqQs := "url=" + badgeId + "&like_color=" + likeColor + "&bg=" + bg + "&clear=" + strconv.FormatBool(clear)
 	reqUrl := apiUrl + "?" + reqQs
 
-	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(0)
-	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
-
 	//속성코드의 #이 앞에서 짤려 clear의 값을 읽지 못한다.
 	expectBadge := getBadge(false, "", 0, "", "", "", false)
+
+	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(0)
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -200,10 +182,10 @@ func Test_GetBadge_좋아요상태인경우_캐싱X(t *testing.T) {
 	reqQs := "url=" + url.QueryEscape(badgeId) + "&like_color=" + url.QueryEscape(likeColor) + "&bg=" + url.QueryEscape(bg) + "&clear=" + strconv.FormatBool(clear)
 	reqUrl := apiUrl + "?" + reqQs
 
+	expectBadge := getBadge(true, likeColor, count, "", "", bg, clear)
+
 	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(count)
 	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(domain.NewReact(domain.ReactId(1), domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId))))
-
-	expectBadge := getBadge(true, likeColor, count, "", "", bg, clear)
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -245,22 +227,15 @@ func initMockRepository() (rr *mocks.ReactRepository) {
 }
 
 func getBadge(isReact bool, likeColor string, countText int, textColor string, shareColor string, bg string, isClear bool) []byte {
-	b := domain.NewBadgeInfo(
-		isReact,
-		likeColor,
-		strconv.Itoa(countText),
-		textColor,
-		shareColor,
-		bg,
-		isClear,
-	)
-	wr, err := badgeImpl.NewLikeBadgeWriter()
+	b := badge.NewLikeBadge(likeColor, textColor, shareColor, bg, countText, isReact, isClear)
+
+	wr, err := badge.NewLikeBadgeWriter()
 	if err != nil {
 		panic(err)
 	}
 
 	//when
-	svg, err := wr.RenderBadge(*b)
+	svg, err := wr.RenderBadge(b)
 	if err != nil {
 		panic(err)
 	}

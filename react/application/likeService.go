@@ -1,7 +1,7 @@
 package application
 
 import (
-	"likeIt/badge/domain"
+	"likeIt/domain"
 )
 
 type serviceInterface interface {

@@ -36,15 +36,15 @@ type iconBadge struct {
 }
 
 type likeBadge struct {
-	FontFamily string
-	FontSize   int
-	React      iconBadge // react icon
-	Count      textBadge // count text
-	Share      iconBadge // share icon
-	Width      float64
-	Height     float64
-	Rx         int
-	Ry         int
-	IsReact    string
-	Opacity    int
+	FontFamily     string
+	FontSize       int
+	React          iconBadge // react icon
+	Count          textBadge // count text
+	Share          iconBadge // share icon
+	Width          float64
+	Height         float64
+	XRadius        int
+	YRadius        int
+	ReactClassName string
+	Opacity        int
 }

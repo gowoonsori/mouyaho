@@ -9,7 +9,7 @@ var likeBadgeTemplate = strings.TrimSpace(`
         <stop offset="1" stop-opacity=".1"/>
       </linearGradient>
       <mask id="round">
-        <rect width="{{.Width}}" height="{{.Height}}" rx="{{.Rx}}" ry="{{.Ry}}" fill="#fff"/>
+        <rect width="{{.Width}}" height="{{.Height}}" rx="{{.XRadius}}" ry="{{.YRadius}}" fill="#fff"/>
       </mask>
       <g mask="url(#round)">
         <rect width="{{.React.Rect.Bound.Width}}" height="{{.React.Rect.Bound.Height}}" fill="{{.React.Rect.Color}}" fill-opacity="{{.Opacity}}"/>
@@ -23,7 +23,7 @@ var likeBadgeTemplate = strings.TrimSpace(`
       </g>
       <g class="react_icon" transform="translate({{.React.Icon.Bound.X}},{{.React.Icon.Bound.Y}})">
         <path transform="scale(0.035,0.035)" d="M 433.601 67.001 C 408.901 42.301 376.201 28.801 341.301 28.801 C 306.401 28.801 273.601 42.401 248.901 67.101 L 236.001 80.001 L 222.901 66.901 C 198.201 42.201 165.301 28.501 130.401 28.501 C 95.601 28.501 62.801 42.101 38.201 66.701 C 13.501 91.401 -0.099 124.201 0.001 159.101 C 0.001 194.001 13.701 226.701 38.401 251.401 L 226.201 439.201 C 228.801 441.801 232.301 443.201 235.701 443.201 C 239.101 443.201 242.601 441.901 245.201 439.301 L 433.401 251.801 C 458.101 227.101 471.701 194.301 471.701 159.401 C 471.801 124.501 458.301 91.701 433.601 67.001 Z"
-        class="{{.IsReact}}"
+        class="{{.ReactClassName}}"
         onclick="react()"
         fill-opacity="0" fill="{{.React.Icon.Color}}" stroke-width="20" stroke="{{.React.Icon.Color}}"/>
       </g>
@@ -35,7 +35,7 @@ var likeBadgeTemplate = strings.TrimSpace(`
         .react_icon:hover{
           cursor:pointer;
         }
-        .react_icon .react_on{
+        .react_icon .like{
           fill-opacity:1;
         }
         .share_icon:hover{

@@ -2,7 +2,6 @@ package badge
 
 import (
 	"gorm.io/gorm/utils/tests"
-	"likeIt/badge/domain"
 	"strings"
 	"testing"
 )
@@ -29,7 +28,7 @@ func Test_Render_LikeBadge(t *testing.T) {
       </g>
       <g class="react_icon" transform="translate(15,7)">
         <path transform="scale(0.035,0.035)" d="M 433.601 67.001 C 408.901 42.301 376.201 28.801 341.301 28.801 C 306.401 28.801 273.601 42.401 248.901 67.101 L 236.001 80.001 L 222.901 66.901 C 198.201 42.201 165.301 28.501 130.401 28.501 C 95.601 28.501 62.801 42.101 38.201 66.701 C 13.501 91.401 -0.099 124.201 0.001 159.101 C 0.001 194.001 13.701 226.701 38.401 251.401 L 226.201 439.201 C 228.801 441.801 232.301 443.201 235.701 443.201 C 239.101 443.201 242.601 441.901 245.201 439.301 L 433.401 251.801 C 458.101 227.101 471.701 194.301 471.701 159.401 C 471.801 124.501 458.301 91.701 433.601 67.001 Z"
-        class="react_off"
+        class="unlike"
         onclick="react()"
         fill-opacity="0" fill="red" stroke-width="20" stroke="red"/>
       </g>
@@ -41,7 +40,7 @@ func Test_Render_LikeBadge(t *testing.T) {
         .react_icon:hover{
           cursor:pointer;
         }
-        .react_icon .react_on{
+        .react_icon .like{
           fill-opacity:1;
         }
         .share_icon:hover{
@@ -50,26 +49,30 @@ func Test_Render_LikeBadge(t *testing.T) {
       </style>
     </svg>`))
 
-	b := domain.NewBadgeInfo(
-		false,
-		"red",
-		"0",
-		"black",
-		"red",
-		"#eee",
-		false,
-	)
+	b1 := &Badge{
+		LeftIconColor:   "red",
+		Text:            "0",
+		TextColor:       "black",
+		RightIconColor:  "red",
+		BackgroundColor: "#eee",
+		IsReact:         false,
+		IsClear:         false,
+	}
+	b2 := NewLikeBadge("red", "black", "red", "#eee", 0, false, false)
+
 	wr, err := NewLikeBadgeWriter()
 	if err != nil {
 		panic(err)
 	}
 
 	//when
-	svg, err := wr.RenderBadge(*b)
+	svg1, err := wr.RenderBadge(*b1)
+	svg2, err := wr.RenderBadge(b2)
 	if err != nil {
 		panic(err)
 	}
 
 	//then
-	tests.AssertEqual(t, svg, expect)
+	tests.AssertEqual(t, svg1, expect)
+	tests.AssertEqual(t, svg2, expect)
 }

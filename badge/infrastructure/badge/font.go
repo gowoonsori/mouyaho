@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	fontsPath     = "/Users/gowoo/OneDrive/Documents/GitHub" + "/likeIt/badge/infrastructure/fonts/"
+	fontsPath     = "/Users/user/Documents/GitHub/likeIt/badge/infrastructure/fonts/"
 	arialFontFile = flag.String("fontfile", fontsPath+"ARIAL.TTF", "filename of the ttf font")
 	arialDrawer   = initArialFontDrawer()
 )

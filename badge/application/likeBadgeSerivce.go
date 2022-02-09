@@ -1,10 +1,9 @@
 package application
 
 import (
-	"likeIt/badge/domain"
-	badgeImpl "likeIt/badge/infrastructure/badge"
+	"likeIt/badge/infrastructure/badge"
+	"likeIt/domain"
 	"net/url"
-	"strconv"
 )
 
 type LikeBadgeService struct {
@@ -40,22 +39,16 @@ func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) []byte {
 }
 
 func (bu LikeBadgeService) renderBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
-	bi := domain.NewBadgeInfo(
-		isLike,
-		urlInfo.LikeIconColor,
-		strconv.Itoa(likeCount),
-		urlInfo.CountTextColor,
-		urlInfo.ShareIconColor,
-		urlInfo.BackgroundColor,
-		urlInfo.IsClear,
+	bi := badge.NewLikeBadge(urlInfo.LikeIconColor, urlInfo.CountTextColor, urlInfo.ShareIconColor, urlInfo.BackgroundColor,
+		likeCount, isLike, urlInfo.IsClear,
 	)
 
-	wr, err := badgeImpl.NewLikeBadgeWriter()
+	wr, err := badge.NewLikeBadgeWriter()
 	if err != nil {
 		return []byte{}, err
 	}
 
-	svg, err := wr.RenderBadge(*bi)
+	svg, err := wr.RenderBadge(bi)
 	if err != nil {
 		return []byte{}, err
 	}

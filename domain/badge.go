@@ -3,17 +3,16 @@ package domain
 type BadgeId string //url 이 BadgeId
 
 type BadgeService interface {
-	GetBadge(id UserId, url string) *Badge
-	renderBadge() ([]byte, error)
+	GetBadgeFile(id UserId, url string) []byte
 }
 
 type Badge struct {
-	id        BadgeId
-	badgeInfo BadgeInfo
+	id   BadgeId
+	file []byte
 }
 
-func NewBadge(id BadgeId, badgeInfo BadgeInfo) *Badge {
-	return &Badge{id: id, badgeInfo: badgeInfo}
+func NewBadge(id BadgeId, file []byte) *Badge {
+	return &Badge{id: id, file: file}
 }
 
 func (b Badge) ReactBy(user UserId) *React {
@@ -26,4 +25,8 @@ func (b Badge) UnReactBy(user UserId) *React {
 
 func (b Badge) Id() BadgeId {
 	return b.id
+}
+
+func (b Badge) File() []byte {
+	return b.file
 }

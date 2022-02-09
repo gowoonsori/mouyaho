@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"likeIt/badge/domain"
+	"strconv"
 )
 
-var B2i = map[bool]int{false: 0, true: 1}
-var isReactClassName = map[bool]string{false: "react_off", true: "react_on"}
+var (
+	b2i              = map[bool]int{false: 0, true: 1}
+	isReactClassName = map[bool]string{false: "unlike", true: "like"}
+)
 
 const (
 	defaultBadgeHeight   = float64(30)
@@ -18,13 +20,53 @@ const (
 	YRadius              = 15
 	defaultTextY         = 18
 	defaultTextWidth     = 19
+	defaultLikeColor     = "red"
+	defaultTextColor     = "black"
+	defaultShareColor    = "black"
+	defaultBg            = "#eee"
+	defaultText          = "0"
 )
+
+type Badge struct {
+	LeftIconColor string
+
+	Text      string
+	TextColor string
+
+	RightIconColor string
+
+	BackgroundColor string
+
+	XRadius string
+	YRadius string
+
+	IsReact bool
+	IsClear bool
+}
+
+func NewLikeBadge(iconColor, countColor, shareColor, bg string, count int, isLike, isClear bool) Badge {
+	return Badge{
+		LeftIconColor:   iconColor,
+		Text:            strconv.Itoa(count),
+		TextColor:       countColor,
+		RightIconColor:  shareColor,
+		BackgroundColor: bg,
+		XRadius:         strconv.Itoa(XRadius),
+		YRadius:         strconv.Itoa(YRadius),
+		IsReact:         isLike,
+		IsClear:         isClear,
+	}
+}
+
+type BadgeWriter interface {
+	RenderBadge(badge Badge) ([]byte, error)
+}
 
 type likeBadgeWriter struct {
 	likeBadgeTemplate *template.Template
 }
 
-func NewLikeBadgeWriter() (domain.Writer, error) {
+func NewLikeBadgeWriter() (BadgeWriter, error) {
 	tb, err := template.New("like-badge").Parse(likeBadgeTemplate)
 	if err != nil {
 		return nil, fmt.Errorf("[err] LikeBadgeNewWriter %w", err)
@@ -36,24 +78,23 @@ func NewLikeBadgeWriter() (domain.Writer, error) {
 	return writer, nil
 }
 
-func (bw *likeBadgeWriter) RenderBadge(b domain.BadgeInfo) ([]byte, error) {
+func (bw *likeBadgeWriter) RenderBadge(b Badge) ([]byte, error) {
 	drawer := getArialDrawer()
 	height := defaultBadgeHeight
-	textWidth := drawer.measureString(b.CountText())
+	textWidth := drawer.measureString(b.Text)
 
-	b.Init()
 	lb := &likeBadge{
 		FontFamily: fontFamily,
 		FontSize:   fontSize,
 		React: iconBadge{
-			Rect: rect{Color: color(b.BackgroundColor()),
+			Rect: rect{Color: color(b.BackgroundColor),
 				Bound: bound{
 					Width:  defaultIconRectWidth,
 					Height: height,
 					X:      0,
 					Y:      0,
 				}},
-			Icon: icon{Color: color(b.LikeIconColor()),
+			Icon: icon{Color: color(b.LeftIconColor),
 				Bound: bound{
 					Width:  0,
 					Height: 0,
@@ -63,14 +104,14 @@ func (bw *likeBadgeWriter) RenderBadge(b domain.BadgeInfo) ([]byte, error) {
 			},
 		},
 		Count: textBadge{
-			Rect: rect{Color: color(b.BackgroundColor()),
+			Rect: rect{Color: color(b.BackgroundColor),
 				Bound: bound{
 					Width:  defaultTxtRectWidth + textWidth,
 					Height: height,
 					X:      defaultIconRectWidth,
 					Y:      0,
 				}},
-			Text: text{Msg: b.CountText(), Color: color(b.CountTextColor()),
+			Text: text{Msg: b.Text, Color: color(b.TextColor),
 				Bound: bound{
 					Width:  0,
 					Height: 0,
@@ -79,14 +120,14 @@ func (bw *likeBadgeWriter) RenderBadge(b domain.BadgeInfo) ([]byte, error) {
 				}},
 		},
 		Share: iconBadge{
-			Rect: rect{Color: color(b.BackgroundColor()),
+			Rect: rect{Color: color(b.BackgroundColor),
 				Bound: bound{
 					Width:  defaultIconRectWidth,
 					Height: height,
 					X:      defaultIconRectWidth + textWidth + defaultTxtRectWidth,
 					Y:      0,
 				}},
-			Icon: icon{Color: color(b.ShareIconColor()),
+			Icon: icon{Color: color(b.RightIconColor),
 				Bound: bound{
 					Width:  0,
 					Height: 0,
@@ -95,12 +136,12 @@ func (bw *likeBadgeWriter) RenderBadge(b domain.BadgeInfo) ([]byte, error) {
 				},
 			},
 		},
-		Width:   defaultIconRectWidth + defaultTxtRectWidth + textWidth + defaultIconRectWidth,
-		Height:  defaultBadgeHeight,
-		Rx:      XRadius,
-		Ry:      YRadius,
-		IsReact: isReactClassName[b.IsReact()],
-		Opacity: B2i[!b.IsClear()],
+		Width:          defaultIconRectWidth + defaultTxtRectWidth + textWidth + defaultIconRectWidth,
+		Height:         defaultBadgeHeight,
+		XRadius:        XRadius,
+		YRadius:        YRadius,
+		ReactClassName: isReactClassName[b.IsReact],
+		Opacity:        b2i[!b.IsClear],
 	}
 
 	buf := &bytes.Buffer{}
