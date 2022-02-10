@@ -2,18 +2,18 @@ package interfaces
 
 import (
 	"encoding/json"
-	"likeIt/badge/application"
+	"likeIt/domain"
 	"net/http"
 )
 
 type LikeBadge struct {
-	badgeService application.LikeBadgeService
+	badgeService domain.BadgeService
 }
 
-func (l *LikeBadge) GetBadge(w http.ResponseWriter, r *http.Request) {
+func (l *LikeBadge) GetLikeBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user")
 
-	b := l.badgeService.GetBadge(user.(string), r.RequestURI)
+	b := l.badgeService.GetBadgeFile(domain.UserId(user.(string)), r.RequestURI)
 	if b == nil {
 		w.WriteHeader(404)
 		w.Write([]byte(http.StatusText(404)))
