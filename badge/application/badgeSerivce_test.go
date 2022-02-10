@@ -94,7 +94,7 @@ func Test_Render_Like_Badge_Another_Query(t *testing.T) {
 	assert.Equal(t, gotSvg, expectSvg)
 }
 
-func Test_GetBadge_url만있는경우_캐싱X(t *testing.T) {
+func Test_GetBadgeFile_url만있는경우_캐싱X(t *testing.T) {
 	//given
 	rr := initMockRepository()
 	url := "https://www.likeIt.com/api/badge"
@@ -109,13 +109,13 @@ func Test_GetBadge_url만있는경우_캐싱X(t *testing.T) {
 
 	//when
 	ls := LikeBadgeService{rr: rr}
-	b := ls.GetBadge(userId, reqUrl)
+	b := ls.GetBadgeFile(domain.UserId(userId), reqUrl)
 
 	//then
 	assert.Equal(t, expectBadge, b)
 }
 
-func Test_GetBadge_다른속성있는경우_캐싱X(t *testing.T) {
+func Test_GetBadgeFile_다른속성있는경우_캐싱X(t *testing.T) {
 	//given
 	rr := initMockRepository()
 	apiUrl := "https://www.likeIt.com/api/badge"
@@ -135,13 +135,13 @@ func Test_GetBadge_다른속성있는경우_캐싱X(t *testing.T) {
 
 	//when
 	ls := LikeBadgeService{rr: rr}
-	b := ls.GetBadge(userId, reqUrl)
+	b := ls.GetBadgeFile(domain.UserId(userId), reqUrl)
 
 	//then
 	assert.Equal(t, expectBadge, b)
 }
 
-func Test_GetBadge_다른속성있고_Encoding안된경우_캐싱X(t *testing.T) {
+func Test_GetBadgeFile_다른속성있고_Encoding안된경우_캐싱X(t *testing.T) {
 	//given
 	rr := initMockRepository()
 	apiUrl := "https://www.likeIt.com/api/badge"
@@ -161,13 +161,13 @@ func Test_GetBadge_다른속성있고_Encoding안된경우_캐싱X(t *testing.T)
 
 	//when
 	ls := LikeBadgeService{rr: rr}
-	b := ls.GetBadge(userId, reqUrl)
+	b := ls.GetBadgeFile(domain.UserId(userId), reqUrl)
 
 	//then
 	assert.Equal(t, expectBadge, b)
 }
 
-func Test_GetBadge_좋아요상태인경우_캐싱X(t *testing.T) {
+func Test_GetBadgeFile_좋아요상태인경우_캐싱X(t *testing.T) {
 	//given
 	rr := initMockRepository()
 	apiUrl := "https://www.likeIt.com/api/badge"
@@ -187,13 +187,13 @@ func Test_GetBadge_좋아요상태인경우_캐싱X(t *testing.T) {
 
 	//when
 	ls := LikeBadgeService{rr: rr}
-	b := ls.GetBadge(userId, reqUrl)
+	b := ls.GetBadgeFile(domain.UserId(userId), reqUrl)
 
 	//then
 	assert.Equal(t, expectBadge, b)
 }
 
-func Test_GetBadge_Badge_캐싱O(t *testing.T) {
+func Test_GetBadgeFile_Badge_캐싱O(t *testing.T) {
 	//given
 	rr := initMockRepository()
 	apiUrl := "https://www.likeIt.com/api/badge"
@@ -213,7 +213,7 @@ func Test_GetBadge_Badge_캐싱O(t *testing.T) {
 
 	//when
 	ls := LikeBadgeService{rr: rr}
-	b := ls.GetBadge(userId, reqUrl)
+	b := ls.GetBadgeFile(domain.UserId(userId), reqUrl)
 
 	//then
 	assert.Equal(t, expectBadge, b)

@@ -4,7 +4,7 @@ type BadgeId string //url 이 BadgeId
 
 //go:generate mockery --name BadgeService --case underscore
 type BadgeService interface {
-	GetBadgeFile(id UserId, url string) []byte
+	GetBadgeFile(id UserId, reqUrl string) []byte
 }
 
 type Badge struct {

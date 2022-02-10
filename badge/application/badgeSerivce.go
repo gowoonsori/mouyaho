@@ -9,23 +9,23 @@ type LikeBadgeService struct {
 	rr domain.ReactRepository
 }
 
-func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) []byte {
+func (lbs LikeBadgeService) GetBadgeFile(userId domain.UserId, reqUrl string) []byte {
 	//query string parsing
 	urlInfo := CreateUrlInfoFromUrl(reqUrl)
 	u := urlInfo.Url
 
 	//like count get
-	likeCount := bu.rr.FindCountByBadgeId(domain.BadgeId(u))
+	likeCount := lbs.rr.FindCountByBadgeId(domain.BadgeId(u))
 
 	//isLike get
-	il := bu.rr.FindByBadgeIdAndUserId(domain.BadgeId(u), domain.UserId(userId))
+	il := lbs.rr.FindByBadgeIdAndUserId(domain.BadgeId(u), domain.UserId(userId))
 	var isLike bool
 	if il != nil {
 		isLike = true
 	}
 
 	//file redering
-	f, err := bu.renderBadge(*urlInfo, isLike, likeCount)
+	f, err := lbs.renderBadge(*urlInfo, isLike, likeCount)
 	if err != nil {
 		return []byte{}
 	}
@@ -33,7 +33,7 @@ func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) []byte {
 	return f
 }
 
-func (bu LikeBadgeService) renderBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
+func (lbs LikeBadgeService) renderBadge(urlInfo UrlInfo, isLike bool, likeCount int) ([]byte, error) {
 	bi := badge.NewLikeBadge(urlInfo.LikeIconColor, urlInfo.CountTextColor, urlInfo.ShareIconColor, urlInfo.BackgroundColor,
 		likeCount, isLike, urlInfo.IsClear,
 	)
