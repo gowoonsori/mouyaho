@@ -1,11 +1,10 @@
 package badge
 
 import (
-	"flag"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
-	"io/ioutil"
+	"likeIt/badge/infrastructure/fonts"
 	"sync"
 )
 
@@ -19,9 +18,7 @@ const (
 )
 
 var (
-	fontsPath     = "/Users/user/Documents/GitHub/likeIt/badge/infrastructure/fonts/"
-	arialFontFile = flag.String("fontfile", fontsPath+"ARIAL.TTF", "filename of the ttf font")
-	arialDrawer   = initArialFontDrawer()
+	arialDrawer = initArialFontDrawer()
 )
 
 type fontDrawer interface {
@@ -54,7 +51,6 @@ func (fd *fontInfo) measureString(s string) float64 {
 func (fd *fontInfo) fixedToPoint(p fixed.Int26_6) float64 {
 	var result float64
 
-	// 26 bit integer(with 1 sign)
 	if p < 0 {
 		reverse := -p
 		result += float64(reverse>>6) * -1
@@ -69,7 +65,7 @@ func getArialDrawer() fontDrawer {
 }
 
 func initArialFontDrawer() fontDrawer {
-	b, err := ioutil.ReadFile(*arialFontFile)
+	b, err := fonts.GetArialFont()
 	if err != nil {
 		panic(err)
 	}
