@@ -57,8 +57,7 @@ func Test_Render_Like_Badge_Success(t *testing.T) {
 	expectSvg, _ := wr.RenderBadge(expectBadge)
 
 	//when
-	qs, err := parsingUrl(reqUrl)
-	urlInfo := CreateUrlInfoFromMap(qs)
+	urlInfo := CreateUrlInfoFromUrl(reqUrl)
 	bs := LikeBadgeService{rr: initMockRepository()}
 	gotSvg, err := bs.renderBadge(*urlInfo, isLike, likeCount)
 
@@ -84,8 +83,7 @@ func Test_Render_Like_Badge_Another_Query(t *testing.T) {
 	expectSvg, _ := wr.RenderBadge(expectBadge)
 
 	//when
-	qs, err := parsingUrl(reqUrl)
-	urlInfo := CreateUrlInfoFromMap(qs)
+	urlInfo := CreateUrlInfoFromUrl(reqUrl)
 	bs := LikeBadgeService{rr: initMockRepository()}
 	gotSvg, err := bs.renderBadge(*urlInfo, isLike, likeCount)
 

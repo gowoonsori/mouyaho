@@ -3,7 +3,6 @@ package application
 import (
 	"likeIt/badge/infrastructure/badge"
 	"likeIt/domain"
-	"net/url"
 )
 
 type LikeBadgeService struct {
@@ -12,11 +11,7 @@ type LikeBadgeService struct {
 
 func (bu LikeBadgeService) GetBadge(userId string, reqUrl string) []byte {
 	//query string parsing
-	qs, err := parsingUrl(reqUrl)
-	if err != nil {
-		return nil
-	}
-	urlInfo := CreateUrlInfoFromMap(qs)
+	urlInfo := CreateUrlInfoFromUrl(reqUrl)
 	u := urlInfo.Url
 
 	//like count get
@@ -54,20 +49,4 @@ func (bu LikeBadgeService) renderBadge(urlInfo UrlInfo, isLike bool, likeCount i
 	}
 
 	return svg, nil
-}
-
-func parsingUrl(reqUrl string) (map[string]string, error) {
-	result := make(map[string]string)
-
-	p, _ := url.Parse(reqUrl)
-	rq, _ := url.QueryUnescape(p.RawQuery)
-	m, err := url.ParseQuery(rq)
-	if err != nil {
-		return result, err
-	}
-	for k, v := range m {
-		result[k] = v[0]
-	}
-
-	return result, nil
 }

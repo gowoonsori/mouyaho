@@ -1,7 +1,7 @@
 package application
 
 import (
-	"bytes"
+	"net/url"
 	"strconv"
 )
 
@@ -14,35 +14,46 @@ type UrlInfo struct {
 	IsClear         bool
 }
 
-func CreateUrlInfoFromMap(queryStrings map[string]string) *UrlInfo {
-	result := &UrlInfo{}
+func CreateUrlInfoFromUrl(reqUrl string) *UrlInfo {
+	u := &UrlInfo{}
+	if err := u.parsingQueryString(reqUrl); err != nil {
+		return nil
+	}
 
-	if v, ok := queryStrings["url"]; ok {
-		result.Url = v
-	}
-	if v, ok := queryStrings["like_color"]; ok {
-		result.LikeIconColor = v
-	}
-	if v, ok := queryStrings["text_color"]; ok {
-		result.CountTextColor = v
-	}
-	if v, ok := queryStrings["share_color"]; ok {
-		result.ShareIconColor = v
-	}
-	if v, ok := queryStrings["bg"]; ok {
-		result.BackgroundColor = v
-	}
-	if v, ok := queryStrings["clear"]; ok {
-		if b, err := strconv.ParseBool(v); err == nil {
-			result.IsClear = b
-		}
-	}
-	return result
+	return u
 }
 
-func (u *UrlInfo) CreateBadgeUrl() string {
-	var b bytes.Buffer
-	b.WriteString(u.Url)
+func (u *UrlInfo) parsingQueryString(reqUrl string) error {
+	//url 생성
+	p, _ := url.Parse(reqUrl)
+	//query string decode
+	rq, _ := url.QueryUnescape(p.RawQuery)
+	//query string to map
+	m, err := url.ParseQuery(rq)
+	if err != nil {
+		return err
+	}
 
-	return b.String()
+	if v, ok := m["url"]; ok {
+		u.Url = v[0]
+	}
+	if v, ok := m["like_color"]; ok {
+		u.LikeIconColor = v[0]
+	}
+	if v, ok := m["text_color"]; ok {
+		u.CountTextColor = v[0]
+	}
+	if v, ok := m["share_color"]; ok {
+		u.ShareIconColor = v[0]
+	}
+	if v, ok := m["bg"]; ok {
+		u.BackgroundColor = v[0]
+	}
+	if v, ok := m["clear"]; ok {
+		if b, err2 := strconv.ParseBool(v[0]); err2 == nil {
+			u.IsClear = b
+		}
+	}
+
+	return nil
 }
