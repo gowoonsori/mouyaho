@@ -23,16 +23,18 @@ func (l *LikeBadge) GetLikeBadgeHandler(w http.ResponseWriter, r *http.Request) 
 			Value:      auth.NewSid(),
 			Path:       "",
 			Domain:     "",
-			Expires:    time.Time{},
+			Expires:    time.Now().Add(time.Hour * 24 * 365),
 			RawExpires: "",
 			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   false,
-			SameSite:   0,
+			Secure:     true,
+			HttpOnly:   true,
+			SameSite:   http.SameSiteDefaultMode,
 			Raw:        "",
 			Unparsed:   nil,
 		}
 		http.SetCookie(w, cookie)
+	} else if cookie.Expires.Before(time.Now()) {
+		cookie.Expires = time.Now().Add(time.Hour * 24 * 365)
 	}
 
 	b := l.badgeService.GetBadgeFile(domain.UserId(cookie.Value), r.RequestURI)
