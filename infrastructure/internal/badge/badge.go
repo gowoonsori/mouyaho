@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"strconv"
 )
 
 var (
@@ -16,18 +15,12 @@ const (
 	defaultBadgeHeight   = float64(30)
 	defaultIconRectWidth = float64(35)
 	defaultTxtRectWidth  = float64(10)
-	XRadius              = 15
-	YRadius              = 15
-	defaultTextY         = 18
-	defaultTextWidth     = 19
-	defaultLikeColor     = "red"
-	defaultTextColor     = "black"
-	defaultShareColor    = "black"
-	defaultBg            = "#eee"
-	defaultText          = "0"
+
+	defaultTextY     = 18
+	defaultTextWidth = 19
 )
 
-type Badge struct {
+type reactBadge struct {
 	LeftIconColor string
 
 	Text      string
@@ -40,45 +33,32 @@ type Badge struct {
 	XRadius string
 	YRadius string
 
-	IsReact bool
 	IsClear bool
+	IsReact bool
 }
 
-func NewLikeBadge(iconColor, countColor, shareColor, bg string, count int, isLike, isClear bool) Badge {
-	return Badge{
-		LeftIconColor:   iconColor,
-		Text:            strconv.Itoa(count),
-		TextColor:       countColor,
-		RightIconColor:  shareColor,
-		BackgroundColor: bg,
-		XRadius:         strconv.Itoa(XRadius),
-		YRadius:         strconv.Itoa(YRadius),
-		IsReact:         isLike,
-		IsClear:         isClear,
-	}
+func NewBadge(leftIconColor string, text string, textColor string, rightIconColor string, backgroundColor string, XRadius string, YRadius string, isClear bool, isReact bool) *reactBadge {
+	return &reactBadge{LeftIconColor: leftIconColor, Text: text, TextColor: textColor, RightIconColor: rightIconColor, BackgroundColor: backgroundColor, XRadius: XRadius, YRadius: YRadius, IsClear: isClear, IsReact: isReact}
 }
 
-type BadgeWriter interface {
-	RenderBadge(badge Badge) ([]byte, error)
+type Writer interface {
+	RenderBadgeFile(b reactBadge) ([]byte, error)
 }
 
 type likeBadgeWriter struct {
 	likeBadgeTemplate *template.Template
 }
 
-func NewLikeBadgeWriter() (BadgeWriter, error) {
+func NewLikeBadgeWriter() (Writer, error) {
 	tb, err := template.New("like-badge").Parse(likeBadgeTemplate)
 	if err != nil {
 		return nil, fmt.Errorf("[err] LikeBadgeNewWriter %w", err)
 	}
 
-	writer := &likeBadgeWriter{
-		likeBadgeTemplate: tb,
-	}
-	return writer, nil
+	return &likeBadgeWriter{likeBadgeTemplate: tb}, nil
 }
 
-func (bw *likeBadgeWriter) RenderBadge(b Badge) ([]byte, error) {
+func (lbw *likeBadgeWriter) RenderBadgeFile(b reactBadge) ([]byte, error) {
 	drawer := getArialDrawer()
 	height := defaultBadgeHeight
 	textWidth := drawer.measureString(b.Text)
@@ -138,14 +118,14 @@ func (bw *likeBadgeWriter) RenderBadge(b Badge) ([]byte, error) {
 		},
 		Width:          defaultIconRectWidth + defaultTxtRectWidth + textWidth + defaultIconRectWidth,
 		Height:         defaultBadgeHeight,
-		XRadius:        XRadius,
-		YRadius:        YRadius,
+		XRadius:        b.XRadius,
+		YRadius:        b.YRadius,
 		ReactClassName: isReactClassName[b.IsReact],
 		Opacity:        b2i[!b.IsClear],
 	}
 
 	buf := &bytes.Buffer{}
-	if err := bw.likeBadgeTemplate.Execute(buf, lb); err != nil {
+	if err := lbw.likeBadgeTemplate.Execute(buf, lb); err != nil {
 		return nil, fmt.Errorf("[err] RenderLikeBadge %w", err)
 	}
 	return buf.Bytes(), nil

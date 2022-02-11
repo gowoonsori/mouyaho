@@ -49,16 +49,7 @@ func Test_Render_LikeBadge(t *testing.T) {
       </style>
     </svg>`))
 
-	b1 := &Badge{
-		LeftIconColor:   "red",
-		Text:            "0",
-		TextColor:       "black",
-		RightIconColor:  "red",
-		BackgroundColor: "#eee",
-		IsReact:         false,
-		IsClear:         false,
-	}
-	b2 := NewLikeBadge("red", "black", "red", "#eee", 0, false, false)
+	b := NewBadge("red", "0", "black", "red", "#eee", "15", "15", false, false)
 
 	wr, err := NewLikeBadgeWriter()
 	if err != nil {
@@ -66,13 +57,11 @@ func Test_Render_LikeBadge(t *testing.T) {
 	}
 
 	//when
-	svg1, err := wr.RenderBadge(*b1)
-	svg2, err := wr.RenderBadge(b2)
+	svg1, err := wr.RenderBadgeFile(*b)
 	if err != nil {
 		panic(err)
 	}
 
 	//then
 	tests.AssertEqual(t, svg1, expect)
-	tests.AssertEqual(t, svg2, expect)
 }

@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"likeIt/badge/infrastructure/auth"
 	"likeIt/domain"
+	"likeIt/infrastructure/auth"
 	"net/http"
 	"time"
 )

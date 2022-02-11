@@ -4,7 +4,7 @@ import (
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
-	"likeIt/badge/infrastructure/fonts"
+	"likeIt/infrastructure/internal/fonts"
 	"sync"
 )
 

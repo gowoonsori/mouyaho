@@ -43,8 +43,8 @@ type likeBadge struct {
 	Share          iconBadge // share icon
 	Width          float64
 	Height         float64
-	XRadius        int
-	YRadius        int
+	XRadius        string
+	YRadius        string
 	ReactClassName string
 	Opacity        int
 }

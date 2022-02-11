@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	"likeIt/infrastructure/internal/auth"
 	"math/rand"
 	"os"
 	"sync"
@@ -15,11 +16,11 @@ func hash(x uint64) uint64 {
 	return (x ^ x>>12 ^ x>>24 ^ x>>36 ^ x>>48 ^ x>>60) & 0xfff
 }
 
-var node = MAC[:] // read only
+var node = auth.MAC[:]
 
 const (
 	sequenceMask       = 0xfff // 12bits
-	saltLen            = 43    // see New(), 8+4+43==55<56, Best performance for sha1.
+	saltLen            = 43    // 8+4+43==55<56, Best performance for sha1.
 	saltUpdateInterval = 3600  // seconds
 )
 
@@ -28,12 +29,12 @@ var (
 
 	gMutex sync.Mutex // protect following
 
-	gSequenceStart uint32 = rand.Uint32() & sequenceMask
-	gLastTimestamp int64  = -1
-	gLastSequence  uint32 = gSequenceStart
+	gSequenceStart       = rand.Uint32() & sequenceMask
+	gLastTimestamp int64 = -1
+	gLastSequence        = gSequenceStart
 
-	gSaltLastUpdateTimestamp int64  = -saltUpdateInterval
-	gSaltSequence            uint32 = rand.Uint32()
+	gSaltLastUpdateTimestamp int64 = -saltUpdateInterval
+	gSaltSequence                  = rand.Uint32()
 )
 
 func NewSid() string {
@@ -41,7 +42,7 @@ func NewSid() string {
 		timeNow     = time.Now()
 		timeNowUnix = timeNow.Unix()
 
-		timestamp = unix100nano(timeNow)
+		timestamp = auth.Unix100nano(timeNow)
 		sequence  uint32
 
 		saltShouldUpdate = false
@@ -57,7 +58,7 @@ func NewSid() string {
 	case timestamp == gLastTimestamp:
 		sequence = (gLastSequence + 1) & sequenceMask
 		if sequence == gSequenceStart {
-			timestamp = tillNext100nano(timestamp)
+			timestamp = auth.TillNext100nano(timestamp)
 			gLastTimestamp = timestamp
 		}
 		gLastSequence = sequence

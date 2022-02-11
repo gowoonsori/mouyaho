@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"likeIt/badge/infrastructure/badge"
 	"likeIt/domain"
 	"likeIt/domain/mocks"
+	"likeIt/infrastructure/badge"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -36,7 +36,7 @@ func Test_GetLikeBadge_Handler_Basic_Success(t *testing.T) {
 	u, _ := url.Parse(reqUrl)
 
 	bs := initMockService()
-	expectResponse := getBadge(false, "", 0, "", "", "", false)
+	expectResponse := getBadge(0, "", "", "", "", false, false)
 	bs.On("GetBadgeFile", domain.UserId(sid), reqUrl).Return(expectResponse)
 	lb := &LikeBadge{badgeService: bs}
 
@@ -62,21 +62,19 @@ func Test_GetLikeBadge_Handler_Basic_Success(t *testing.T) {
 		recorder.Body.String(), expectResponse))
 }
 
-func getBadge(isReact bool, likeColor string, countText int, textColor string, shareColor string, bg string, isClear bool) []byte {
-	b := badge.NewLikeBadge(likeColor, textColor, shareColor, bg, countText, isReact, isClear)
-
-	wr, err := badge.NewLikeBadgeWriter()
-	if err != nil {
-		panic(err)
+func getBadge(countText int, likeColor, textColor, shareColor, bg string, isReact, isClear bool) []byte {
+	u := badge.UrlInfo{
+		Url:             "",
+		LikeIconColor:   likeColor,
+		CountTextColor:  textColor,
+		ShareIconColor:  shareColor,
+		BackgroundColor: bg,
+		IsClear:         isClear,
 	}
 
 	//when
-	svg, err := wr.RenderBadge(b)
-	if err != nil {
-		panic(err)
-	}
-
-	return svg
+	f, _ := badge.GenerateLikeBadge(u, isReact, countText)
+	return f
 }
 
 func initMockService() (rr *mocks.BadgeService) {
