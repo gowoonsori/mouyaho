@@ -40,12 +40,12 @@ func Test_GetLikeBadge_Handler_BasicBadge_ExistCookie_Success(t *testing.T) {
 	bs := initMockService()
 	expectResponse := getBadge(0, "", "", "", "", false, false)
 	bs.On("GetBadgeFile", domain.UserId(sid), reqUrl).Return(expectResponse)
-	lb := &LikeBadge{badgeService: bs}
+	lb := NewLikeBadgeHandler(bs)
 
 	//when
 	recorder := httptest.NewRecorder()
 	http.SetCookie(recorder, &http.Cookie{Name: cookieId, Value: sid})
-	handler := http.HandlerFunc(lb.GetLikeBadgeHandler)
+	handler := http.HandlerFunc(lb.GetLikeBadge)
 	req := &http.Request{
 		Header:     http.Header{"Cookie": recorder.Header()["Set-Cookie"]},
 		Method:     "GET",
@@ -74,11 +74,11 @@ func Test_GetLikeBadge_Handler_BasicBadge_NotExistCookie_Success(t *testing.T) {
 	bs := initMockService()
 	expectResponse := getBadge(0, "", "", "", "", false, false)
 	bs.On("GetBadgeFile", mock.Anything, reqUrl).Return(expectResponse)
-	lb := &LikeBadge{badgeService: bs}
+	lb := NewLikeBadgeHandler(bs)
 
 	//when
 	recorder := httptest.NewRecorder()
-	handler := http.HandlerFunc(lb.GetLikeBadgeHandler)
+	handler := http.HandlerFunc(lb.GetLikeBadge)
 	req := &http.Request{
 		Method:     "GET",
 		URL:        u,
@@ -116,7 +116,7 @@ func Test_GetLikeBadge_Handler_BasicBadge_ExpireCookie_Success(t *testing.T) {
 	bs := initMockService()
 	expectResponse := getBadge(0, "", "", "", "", false, false)
 	bs.On("GetBadgeFile", domain.UserId(sid), reqUrl).Return(expectResponse)
-	lb := &LikeBadge{badgeService: bs}
+	lb := NewLikeBadgeHandler(bs)
 
 	//when
 	recorder := httptest.NewRecorder()
@@ -125,7 +125,7 @@ func Test_GetLikeBadge_Handler_BasicBadge_ExpireCookie_Success(t *testing.T) {
 		Value:   sid,
 		Expires: time.Now().Add(time.Second * -60),
 	})
-	handler := http.HandlerFunc(lb.GetLikeBadgeHandler)
+	handler := http.HandlerFunc(lb.GetLikeBadge)
 	req := &http.Request{
 		Header:     http.Header{"Cookie": recorder.Header()["Set-Cookie"]},
 		Method:     "GET",

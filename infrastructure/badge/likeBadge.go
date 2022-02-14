@@ -5,20 +5,22 @@ import (
 	"strconv"
 )
 
-const (
-	xRadius           = 15
-	yRadius           = 15
-	defaultLikeColor  = "red"
-	defaultTextColor  = "black"
-	defaultShareColor = "black"
-	defaultBg         = "#eee"
-	defaultText       = "0"
-)
-
 func GenerateLikeBadge(urlInfo UrlInfo, isLike bool, likeCount int) (f []byte, err error) {
-	b := badge.NewBadge(urlInfo.LikeIconColor, strconv.Itoa(likeCount), urlInfo.CountTextColor, urlInfo.ShareIconColor, urlInfo.BackgroundColor,
-		strconv.Itoa(xRadius), strconv.Itoa(yRadius), isLike, urlInfo.IsClear,
-	)
+	bo := badge.NewBadgeOpts()
+	if urlInfo.LikeIconColor != "" {
+		bo.LeftIconColor(urlInfo.LikeIconColor)
+	}
+	if urlInfo.CountTextColor != "" {
+		bo.TextColor(urlInfo.CountTextColor)
+	}
+	if urlInfo.ShareIconColor != "" {
+		bo.RightIconColor(urlInfo.ShareIconColor)
+	}
+	if urlInfo.BackgroundColor != "" {
+		bo.BackgroundColor(urlInfo.BackgroundColor)
+	}
+	bo.Text(strconv.Itoa(likeCount)).IsReact(isLike).IsClear(urlInfo.IsClear)
+	b := badge.CreateBadgeFromOpts(bo)
 
 	wr, err := badge.NewLikeBadgeWriter()
 	if err != nil {

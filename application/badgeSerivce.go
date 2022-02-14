@@ -9,6 +9,10 @@ type LikeBadgeService struct {
 	rr domain.ReactRepository
 }
 
+func NewLikeBadgeService(rr domain.ReactRepository) *LikeBadgeService {
+	return &LikeBadgeService{rr: rr}
+}
+
 func (lbs LikeBadgeService) GetBadgeFile(userId domain.UserId, reqUrl string) []byte {
 	//query string parsing
 	urlInfo := badge.CreateUrlInfoFromUrl(reqUrl)

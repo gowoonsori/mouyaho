@@ -11,11 +11,15 @@ var (
 	cookieId = "glb_id"
 )
 
-type LikeBadge struct {
+type LikeBadgeHandler struct {
 	badgeService domain.BadgeService
 }
 
-func (l *LikeBadge) GetLikeBadgeHandler(w http.ResponseWriter, r *http.Request) {
+func NewLikeBadgeHandler(badgeService domain.BadgeService) *LikeBadgeHandler {
+	return &LikeBadgeHandler{badgeService: badgeService}
+}
+
+func (l *LikeBadgeHandler) GetLikeBadge(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(cookieId)
 	if err == http.ErrNoCookie {
 		cookie = &http.Cookie{

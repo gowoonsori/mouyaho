@@ -15,11 +15,19 @@ const (
 	defaultBadgeHeight   = float64(30)
 	defaultIconRectWidth = float64(35)
 	defaultTxtRectWidth  = float64(10)
+	defaultLeftColor     = "red"
+	defaultTextColor     = "black"
+	defaultRightColor    = "black"
+	defaultBg            = "#eee"
+	defaultText          = "0"
+	xRadius              = "15"
+	yRadius              = "15"
 
 	defaultTextY     = 18
 	defaultTextWidth = 19
 )
 
+//  badge domain
 type reactBadge struct {
 	LeftIconColor string
 
@@ -35,10 +43,6 @@ type reactBadge struct {
 
 	IsClear bool
 	IsReact bool
-}
-
-func NewBadge(leftIconColor string, text string, textColor string, rightIconColor string, backgroundColor string, XRadius string, YRadius string, isClear bool, isReact bool) *reactBadge {
-	return &reactBadge{LeftIconColor: leftIconColor, Text: text, TextColor: textColor, RightIconColor: rightIconColor, BackgroundColor: backgroundColor, XRadius: XRadius, YRadius: YRadius, IsClear: isClear, IsReact: isReact}
 }
 
 type Writer interface {
@@ -129,4 +133,85 @@ func (lbw *likeBadgeWriter) RenderBadgeFile(b reactBadge) ([]byte, error) {
 		return nil, fmt.Errorf("[err] RenderLikeBadge %w", err)
 	}
 	return buf.Bytes(), nil
+}
+
+// Opt라는 dto를 통해 badge 생성
+func CreateBadgeFromOpts(bo *_BadgeOpts) *reactBadge {
+	if bo == nil {
+		bo = NewBadgeOpts()
+	}
+	return &reactBadge{LeftIconColor: bo.leftIconColor, Text: bo.text, TextColor: bo.textColor, RightIconColor: bo.rightIconColor, BackgroundColor: bo.backgroundColor, XRadius: bo.xRadius, YRadius: bo.yRadius, IsClear: bo.isClear, IsReact: bo.isReact}
+}
+
+//-----------------------------------------------------
+//Badge를 만들기 위한 dto
+type _BadgeOpts struct {
+	leftIconColor   string
+	text            string
+	textColor       string
+	rightIconColor  string
+	backgroundColor string
+	xRadius         string
+	yRadius         string
+	isClear         bool
+	isReact         bool
+}
+
+func (bo *_BadgeOpts) LeftIconColor(leftIconColor string) *_BadgeOpts {
+	bo.leftIconColor = leftIconColor
+	return bo
+}
+
+func (bo *_BadgeOpts) Text(text string) *_BadgeOpts {
+	bo.text = text
+	return bo
+}
+
+func (bo *_BadgeOpts) TextColor(textColor string) *_BadgeOpts {
+	bo.textColor = textColor
+	return bo
+}
+
+func (bo *_BadgeOpts) RightIconColor(rightIconColor string) *_BadgeOpts {
+	bo.rightIconColor = rightIconColor
+	return bo
+}
+
+func (bo *_BadgeOpts) BackgroundColor(backgroundColor string) *_BadgeOpts {
+	bo.backgroundColor = backgroundColor
+	return bo
+}
+
+func (bo *_BadgeOpts) XRadius(xRadius string) *_BadgeOpts {
+	bo.xRadius = xRadius
+	return bo
+}
+
+func (bo *_BadgeOpts) YRadius(yRadius string) *_BadgeOpts {
+	bo.yRadius = yRadius
+	return bo
+}
+
+func (bo *_BadgeOpts) IsClear(isClear bool) *_BadgeOpts {
+	bo.isClear = isClear
+	return bo
+}
+
+func (bo *_BadgeOpts) IsReact(isReact bool) *_BadgeOpts {
+	bo.isReact = isReact
+	return bo
+}
+
+func NewBadgeOpts() *_BadgeOpts {
+	return &_BadgeOpts{
+		leftIconColor:   defaultLeftColor,
+		text:            defaultText,
+		textColor:       defaultTextColor,
+		rightIconColor:  defaultRightColor,
+		backgroundColor: defaultBg,
+		xRadius:         xRadius,
+		yRadius:         yRadius,
+		isClear:         false,
+		isReact:         false,
+	}
 }
