@@ -157,6 +157,20 @@ type _BadgeOpts struct {
 	isReact         bool
 }
 
+func NewBadgeOpts() *_BadgeOpts {
+	return &_BadgeOpts{
+		leftIconColor:   defaultLeftColor,
+		text:            defaultText,
+		textColor:       defaultTextColor,
+		rightIconColor:  defaultRightColor,
+		backgroundColor: defaultBg,
+		xRadius:         xRadius,
+		yRadius:         yRadius,
+		isClear:         false,
+		isReact:         false,
+	}
+}
+
 func (bo *_BadgeOpts) LeftIconColor(leftIconColor string) *_BadgeOpts {
 	bo.leftIconColor = leftIconColor
 	return bo
@@ -200,18 +214,4 @@ func (bo *_BadgeOpts) IsClear(isClear bool) *_BadgeOpts {
 func (bo *_BadgeOpts) IsReact(isReact bool) *_BadgeOpts {
 	bo.isReact = isReact
 	return bo
-}
-
-func NewBadgeOpts() *_BadgeOpts {
-	return &_BadgeOpts{
-		leftIconColor:   defaultLeftColor,
-		text:            defaultText,
-		textColor:       defaultTextColor,
-		rightIconColor:  defaultRightColor,
-		backgroundColor: defaultBg,
-		xRadius:         xRadius,
-		yRadius:         yRadius,
-		isClear:         false,
-		isReact:         false,
-	}
 }
