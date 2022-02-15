@@ -24,3 +24,8 @@ func Test_Read_CURRENT_DIR(t *testing.T) {
 	dir, _ = os.Executable() //빌드된 파일의 위치(tmp/)
 	fmt.Println(filepath.Dir(dir))
 }
+
+func Test_Read_ARIAL_TTF(t *testing.T) {
+	b, _ := GetArialFont()
+	fmt.Println(b)
+}
