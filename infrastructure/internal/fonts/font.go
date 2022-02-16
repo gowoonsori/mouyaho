@@ -1,22 +1,28 @@
 package fonts
 
 import (
+	"github.com/joho/godotenv"
 	"io/ioutil"
-	"path/filepath"
-	"runtime"
+	"os"
 )
 
 var (
 	arialFont []byte
 )
 
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error Loading .env file")
+	}
+}
+
 func GetArialFont() ([]byte, error) {
 	if arialFont == nil {
-		_, b, _, _ := runtime.Caller(0)
-		b = filepath.Dir(b) + "/ARIAL.TTF"
+		p := os.Getenv("FONT_PATH") + "ARIAL.TTF"
 
 		var err error
-		arialFont, err = ioutil.ReadFile(b)
+		arialFont, err = ioutil.ReadFile(p)
 		return arialFont, err
 	}
 	return arialFont, nil
