@@ -3,6 +3,7 @@ package fonts
 import (
 	"github.com/joho/godotenv"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -19,13 +20,10 @@ func init() {
 
 func GetArialFont() ([]byte, error) {
 	if arialFont == nil {
-		p := os.Getenv("FONT_PATH")
-		if p == "" {
-			env := os.Getenv("APP_ENV")
-			p = os.Getenv("FONT_PATH_" + env)
-		}
-		p += "ARIAL.TTF"
+		env := os.Getenv("APP_ENV")
+		p := os.Getenv("FONT_PATH_"+env) + "ARIAL.TTF"
 
+		log.Println("font path = " + p)
 		var err error
 		arialFont, err = ioutil.ReadFile(p)
 		return arialFont, err
