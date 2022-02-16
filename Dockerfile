@@ -4,6 +4,7 @@ WORKDIR /app/like-it
 
 COPY go.mod .
 COPY go.sum .
+COPY ./infrastructure/internal/fonts/ARIAL.TTF .
 RUN go mod download
 COPY . .
 

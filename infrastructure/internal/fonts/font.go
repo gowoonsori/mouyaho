@@ -19,7 +19,12 @@ func init() {
 
 func GetArialFont() ([]byte, error) {
 	if arialFont == nil {
-		p := os.Getenv("FONT_PATH") + "ARIAL.TTF"
+		p := os.Getenv("FONT_PATH")
+		if p == "" {
+			env := os.Getenv("APP_ENV")
+			p = os.Getenv("FONT_PATH_" + env)
+		}
+		p += "ARIAL.TTF"
 
 		var err error
 		arialFont, err = ioutil.ReadFile(p)
