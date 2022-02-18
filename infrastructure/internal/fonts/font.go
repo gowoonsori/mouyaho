@@ -1,32 +1,32 @@
 package fonts
 
 import (
-	"github.com/joho/godotenv"
-	"io/ioutil"
+	"encoding/base64"
 	"log"
-	"os"
 )
 
 var (
 	arialFont []byte
+	veraFont  []byte
 )
 
 func init() {
-	err := godotenv.Load()
+	var err error
+	arialFont, err = base64.StdEncoding.DecodeString(arialBase64)
 	if err != nil {
-		panic("Error Loading .env file")
+		log.Fatalf("Couldn't decode base64 font data: %s\n", err)
+	}
+
+	veraFont, err = base64.StdEncoding.DecodeString(veraSansBase64)
+	if err != nil {
+		log.Fatalf("Couldn't decode base64 font data: %s\n", err)
 	}
 }
 
-func GetArialFont() ([]byte, error) {
-	if arialFont == nil {
-		env := os.Getenv("APP_ENV")
-		p := os.Getenv("FONT_PATH_"+env) + "ARIAL.TTF"
+func GetArialFont() []byte {
+	return arialFont
+}
 
-		log.Println("font path = " + p)
-		var err error
-		arialFont, err = ioutil.ReadFile(p)
-		return arialFont, err
-	}
-	return arialFont, nil
+func GetVeraFont() []byte {
+	return veraFont
 }

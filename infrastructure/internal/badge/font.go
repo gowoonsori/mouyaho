@@ -11,26 +11,43 @@ import (
 type FontType int
 
 const (
-	fontDPI         = 72
-	fontSize        = 11
-	extraVeraSansDx = 13
-	fontFamily      = "Arial,Sans,Verdana,Helvetica,sans-serif"
+	fontDPI               = 72
+	fontSize              = 11
+	extraVeraSansDx       = 13
+	arialFontFamily       = "Arial,Sans,Verdana,Helvetica,sans-serif"
+	veraFontFamily        = "Vera,Sans,Verdana,Helvetica,sans-serif"
+	defaultArialFontWidth = 19
+	arialWidthPerWord     = 6
+	defaultVeraFontWidth  = 20
+	veraWidthPerWord      = 7
 )
 
 var (
 	arialDrawer = initArialFontDrawer()
+	veraDrawer  = initVeraFontDrawer()
 )
 
 type fontDrawer interface {
 	measureString(string) float64
+	getDefaultWidth() float64
+	getFontFamily() string
 }
 
 type fontInfo struct {
 	sync.Mutex
-	fontSize   int
-	extraDx    int
-	fontFamily string
-	drawer     *font.Drawer
+	fontSize     int
+	extraDx      int
+	fontFamily   string
+	defaultWidth float64
+	drawer       *font.Drawer
+}
+
+func (fd *fontInfo) getFontFamily() string {
+	return fd.fontFamily
+}
+
+func (fd *fontInfo) getDefaultWidth() float64 {
+	return fd.defaultWidth
 }
 
 func (fd *fontInfo) measureString(s string) float64 {
@@ -65,10 +82,7 @@ func getArialDrawer() fontDrawer {
 }
 
 func initArialFontDrawer() fontDrawer {
-	b, err := fonts.GetArialFont()
-	if err != nil {
-		panic(err)
-	}
+	b := fonts.GetArialFont()
 
 	f, err := truetype.Parse(b)
 	if err != nil {
@@ -78,7 +92,7 @@ func initArialFontDrawer() fontDrawer {
 	return &fontInfo{
 		fontSize:   fontSize,
 		extraDx:    extraVeraSansDx,
-		fontFamily: fontFamily,
+		fontFamily: arialFontFamily,
 		drawer: &font.Drawer{
 			Face: truetype.NewFace(f, &truetype.Options{
 				Size:    fontDPI,
@@ -86,5 +100,33 @@ func initArialFontDrawer() fontDrawer {
 				Hinting: font.HintingFull,
 			}),
 		},
+		defaultWidth: defaultArialFontWidth,
+	}
+}
+
+func getVeraDrawer() fontDrawer {
+	return veraDrawer
+}
+
+func initVeraFontDrawer() fontDrawer {
+	b := fonts.GetVeraFont()
+
+	f, err := truetype.Parse(b)
+	if err != nil {
+		panic(err)
+	}
+
+	return &fontInfo{
+		fontSize:   fontSize,
+		extraDx:    extraVeraSansDx,
+		fontFamily: veraFontFamily,
+		drawer: &font.Drawer{
+			Face: truetype.NewFace(f, &truetype.Options{
+				Size:    fontDPI,
+				DPI:     fontSize,
+				Hinting: font.HintingFull,
+			}),
+		},
+		defaultWidth: defaultVeraFontWidth,
 	}
 }

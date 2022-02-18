@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/mock"
 	"likeIt/application"
@@ -11,14 +12,19 @@ import (
 	"os"
 )
 
+var env string
+
 func init() {
 	if err := godotenv.Load(".env"); err != nil {
 		panic("Error Loading .env file")
 	}
+	env = os.Getenv("APP_ENV")
+	if err := godotenv.Load(".env." + env); err != nil {
+		panic(fmt.Sprintf("Error Loading .env.%s file", env))
+	}
 }
 
 func main() {
-	env := os.Getenv("APP_ENV")
 	port := os.Getenv("APP_PORT")
 
 	// Repository 구현체 생성

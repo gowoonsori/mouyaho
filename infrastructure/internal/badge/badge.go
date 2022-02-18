@@ -23,8 +23,7 @@ const (
 	xRadius              = "15"
 	yRadius              = "15"
 
-	defaultTextY     = 18
-	defaultTextWidth = 19
+	defaultTextY = 18
 )
 
 //  badge domain
@@ -68,7 +67,7 @@ func (lbw *likeBadgeWriter) RenderBadgeFile(b reactBadge) ([]byte, error) {
 	textWidth := drawer.measureString(b.Text)
 
 	lb := &likeBadge{
-		FontFamily: fontFamily,
+		FontFamily: drawer.getFontFamily(),
 		FontSize:   fontSize,
 		React: iconBadge{
 			Rect: rect{Color: color(b.BackgroundColor),
@@ -115,7 +114,7 @@ func (lbw *likeBadgeWriter) RenderBadgeFile(b reactBadge) ([]byte, error) {
 				Bound: bound{
 					Width:  0,
 					Height: 0,
-					X:      9 + textWidth - defaultTextWidth,
+					X:      9 + textWidth - drawer.getDefaultWidth(),
 					Y:      -11,
 				},
 			},
