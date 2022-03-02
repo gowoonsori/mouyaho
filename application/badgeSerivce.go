@@ -62,18 +62,6 @@ func (lbs LikeBadgeService) ReactBadge(userId domain.UserId, badgeId domain.Badg
 	//userId/badgeId로 react 조회
 	react := lbs.rr.FindByBadgeIdAndUserId(badgeId, userId)
 
-	if react == nil {
-		switch reactType {
-		case "like":
-			l, err := lbs.rr.Save(domain.ByOn(userId, badgeId))
-		case "unlike":
-
-		}
-	} else {
-		if react.IsLike() {
-
-		}
-	}
 	//reactType으로 분리
 	//만일 like인데 react가 존재하고 like 삳태면 fail
 	//like인데 react존재 안하거나 react추가
