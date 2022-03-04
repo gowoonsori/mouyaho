@@ -177,7 +177,7 @@ func Test_GetBadgeFile_좋아요상태인경우_캐싱X(t *testing.T) {
 	expectBadge := getBadge(count, likeColor, "", "", bg, true, clear)
 
 	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(count)
-	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(domain.NewReact(domain.ReactId(1), domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId))))
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(domain.NewReact(domain.ReactId(1), domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId)), true))
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -203,7 +203,7 @@ func Test_GetBadgeFile_Badge_캐싱O(t *testing.T) {
 	expectBadge := getBadge(count, likeColor, "", "", bg, true, clear)
 
 	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(count)
-	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(domain.NewReact(domain.ReactId(1), domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId))))
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(domain.NewReact(domain.ReactId(1), domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId)), true))
 
 	//when
 	ls := LikeBadgeService{rr: rr}
@@ -211,6 +211,52 @@ func Test_GetBadgeFile_Badge_캐싱O(t *testing.T) {
 
 	//then
 	assert.Equal(t, expectBadge, b)
+}
+
+func Test_LikeBadge_처음좋아요(t *testing.T) {
+	//given
+	rr := initMockRepository()
+	badgeId := "https://gowoonsori.com"
+	userId := "QD12LAD12LKAsd12DA1dls321sda"
+	expectedCount := 12
+
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(nil)
+	rr.On("Save", domain.ByOn(domain.UserId(userId), domain.BadgeId(badgeId))).Return(domain.ByOn(domain.UserId(userId), domain.BadgeId(badgeId)), nil)
+	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(expectedCount)
+
+	//when
+	ls := LikeBadgeService{rr: rr}
+	b := ls.LikeBadge(domain.UserId(userId), domain.BadgeId(badgeId))
+
+	//then
+	assert.Equal(t, &ReactDto{
+		Count:  expectedCount,
+		IsLike: true,
+	}, b)
+}
+
+func Test_LikeBadge_좋아요상태변경(t *testing.T) {
+	//given
+	rr := initMockRepository()
+	badgeId := "https://gowoonsori.com"
+	userId := "QD12LAD12LKAsd12DA1dls321sda"
+	reactId := domain.ReactId(12345)
+	react := domain.NewReact(reactId, domain.BadgeId(badgeId), *domain.NewReader(domain.UserId(userId)), false)
+	expectedCount := 12
+
+	rr.On("FindByBadgeIdAndUserId", domain.BadgeId(badgeId), domain.UserId(userId)).Return(react)
+	rr.On("UpdateLikeStatusById", react.Id(), true).Return(nil)
+	rr.On("FindCountByBadgeId", domain.BadgeId(badgeId)).Return(expectedCount)
+
+	//when
+	ls := LikeBadgeService{rr: rr}
+	b := ls.LikeBadge(domain.UserId(userId), domain.BadgeId(badgeId))
+
+	//then
+	assert.Equal(t, &ReactDto{
+		Count:  expectedCount,
+		IsLike: true,
+	}, b)
 }
 
 func initMockRepository() (rr *mocks.ReactRepository) {

@@ -97,6 +97,15 @@ func (_m *ReactRepository) Save(b *domain.React) (*domain.React, error) {
 }
 
 // UpdateLikeStatusById provides a mock function with given fields: id, status
-func (_m *ReactRepository) UpdateLikeStatusById(id domain.ReactId, status bool) {
-	_m.Called(id, status)
+func (_m *ReactRepository) UpdateLikeStatusById(id domain.ReactId, status bool) error {
+	ret := _m.Called(id, status)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(domain.ReactId, bool) error); ok {
+		r0 = rf(id, status)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }

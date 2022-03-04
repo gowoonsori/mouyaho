@@ -9,7 +9,7 @@ type ReactRepository interface {
 	FindByBadgeIdAndUserId(badgeId BadgeId, id UserId) *React
 	DeleteById(id ReactId) error
 	FindCountByBadgeId(badgeId BadgeId) int
-	UpdateLikeStatusById(id ReactId, status bool)
+	UpdateLikeStatusById(id ReactId, status bool) error
 }
 
 type React struct {
@@ -19,8 +19,8 @@ type React struct {
 	isLike  bool
 }
 
-func NewReact(id ReactId, badgeId BadgeId, reader Reader) *React {
-	return &React{id: id, badgeId: badgeId, reader: reader}
+func NewReact(id ReactId, badgeId BadgeId, reader Reader, isLike bool) *React {
+	return &React{id: id, badgeId: badgeId, reader: reader, isLike: isLike}
 }
 
 func ByOn(userId UserId, badgeId BadgeId) *React {
