@@ -1,6 +1,9 @@
-package domain
+package interaface
 
-type badgeInfo struct {
+type BadgeDto struct {
+	Owner       string
+	Repo        string
+	Title       string
 	BgColor     string
 	BorderColor string
 	IconColor   string
@@ -8,10 +11,4 @@ type badgeInfo struct {
 	TextColor   string
 	ShareColor  string
 	Edge        string //flat, round
-	Type        string //좋아요, 투표
-}
-
-type githubIssue struct {
-	Repo  string
-	Title string
 }
