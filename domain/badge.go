@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"likeIt/infrastructure/badge"
+	"likeIt/internal/badge"
 	"regexp"
 )
 

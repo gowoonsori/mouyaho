@@ -1,4 +1,4 @@
-package interaface
+package http
 
 import "likeIt/domain"
 

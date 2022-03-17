@@ -2,7 +2,7 @@ package application
 
 import (
 	"likeIt/domain"
-	badgeInfra "likeIt/infrastructure/badge"
+	badgeInfra "likeIt/internal/badge"
 	"strconv"
 )
 

@@ -1,4 +1,4 @@
-package interaface
+package http
 
 type BadgeDto struct {
 	Owner       string
