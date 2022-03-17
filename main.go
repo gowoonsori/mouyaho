@@ -1,10 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"likeIt/env"
+	"likeIt/oauth"
+	"net/http"
 )
 
 func main() {
-	fmt.Printf(env.Config.App.Name)
+	http.HandleFunc("/auth", oauth.AuthHandler)
+	http.HandleFunc("/auth/callback", oauth.CallbackHandler)
+
+	_ = http.ListenAndServe(":"+env.Config.Server.Port, nil)
 }
