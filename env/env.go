@@ -8,7 +8,8 @@ import (
 )
 
 type app struct {
-	Name string `yaml:"name"`
+	Name       string `yaml:"name"`
+	SessionKey string `yaml:"session-key"`
 }
 
 type server struct {
@@ -52,12 +53,13 @@ func setLocal() {
 }
 
 func setProd() {
-	Config.App.Name = os.Getenv("WC_APP_NAME")
-	Config.Server.Port = os.Getenv("WC_SERVER_PORT")
-	Config.Github.AppId = os.Getenv("WC_GITHUB_APP_ID")
-	Config.Github.ClientId = os.Getenv("WC_GITHUB_CLIENT_ID")
-	Config.Github.ClientSecret = os.Getenv("WC_GITHUB_CLIENT_SECRET")
-	Config.Github.CallbackUrl = os.Getenv("WC_GITHUB_CALLBACK_URL")
-	Config.Github.PublicKey = os.Getenv("WC_GITHUB_PUBLIC_KEY")
-	Config.Github.PrivateKey = os.Getenv("WC_GITHUB_PRIVATE_KEY")
+	Config.App.Name = os.Getenv("MH_APP_NAME")
+	Config.App.SessionKey = os.Getenv("MH_SESSION_KEY")
+	Config.Server.Port = os.Getenv("MH_SERVER_PORT")
+	Config.Github.AppId = os.Getenv("MH_GITHUB_APP_ID")
+	Config.Github.ClientId = os.Getenv("MH_GITHUB_CLIENT_ID")
+	Config.Github.ClientSecret = os.Getenv("MH_GITHUB_CLIENT_SECRET")
+	Config.Github.CallbackUrl = os.Getenv("MH_GITHUB_CALLBACK_URL")
+	Config.Github.PublicKey = os.Getenv("MH_GITHUB_PUBLIC_KEY")
+	Config.Github.PrivateKey = os.Getenv("MH_GITHUB_PRIVATE_KEY")
 }
