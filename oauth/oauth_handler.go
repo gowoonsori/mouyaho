@@ -35,7 +35,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientId:     env.Config.Github.ClientId,
 		ClientSecret: env.Config.Github.ClientSecret,
 		Code:         code,
-		Scopes:       []string{"repo"},
+		RedirectUrl:  env.Config.Github.CallbackUrl,
 	})
 	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token",
 		bytes.NewBuffer(requestJSON),

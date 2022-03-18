@@ -1,10 +1,10 @@
 package oauth
 
 type GithubTokenRequest struct {
-	ClientId     string   `json:"client_id"`
-	ClientSecret string   `json:"client_secret"`
-	Code         string   `json:"code"`
-	Scopes       []string `json:"scopes"`
+	ClientId     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Code         string `json:"code"`
+	RedirectUrl  string `json:"redirect_url"`
 }
 
 type GithubTokenResponse struct {
