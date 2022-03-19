@@ -1,29 +1,22 @@
-package auth
+package github
 
 import (
 	"bytes"
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
-	"likeIt/env"
+	"likeIt/config"
 	"log"
 	"net/http"
 )
 
 // get user token after login
-func getUserToken(code string) string {
-	// generate state
-	b := make([]byte, 16)
-	_, _ = rand.Read(b)
-	state := base64.URLEncoding.EncodeToString(b)
-
+func getUserToken(code, state string) string {
 	//generate req body
-	requestJSON, _ := json.Marshal(GithubTokenRequest{
-		ClientId:     env.Config.Github.ClientId,
-		ClientSecret: env.Config.Github.ClientSecret,
+	requestJSON, _ := json.Marshal(TokenRequest{
+		ClientId:     config.Github.ClientId,
+		ClientSecret: config.Github.ClientSecret,
 		Code:         code,
-		RedirectUrl:  env.Config.Github.CallbackUrl,
+		RedirectUrl:  config.Github.CallbackUrl,
 		State:        state,
 	})
 	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token",
@@ -43,7 +36,7 @@ func getUserToken(code string) string {
 
 	// Response body converted to stringified JSON
 	resBody, _ := ioutil.ReadAll(res.Body)
-	var gts GithubTokenResponse
+	var gts TokenResponse
 	json.Unmarshal(resBody, &gts)
 
 	return gts.AccessToken
