@@ -7,7 +7,6 @@ import (
 )
 
 func EncryptAES(pt, key []byte) string {
-	//pt = base64.URLEncoding.EncodeToString([]byte(pt))
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
@@ -40,6 +39,5 @@ func DecryptAES(ct, key []byte) string {
 
 	pt, err := gcm.Open(nil, nonce, pct, nil)
 
-	//orgin, _ := base64.URLEncoding.DecodeString(string(pt))
 	return string(pt)
 }

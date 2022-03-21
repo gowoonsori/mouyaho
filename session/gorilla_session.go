@@ -13,5 +13,5 @@ var (
 func init() {
 	Store.Options.HttpOnly = true
 	Store.Options.Secure = true
-	Store.Options.MaxAge = 60 * 60 * 24 * 7
+	Store.Options.MaxAge = 60 * 60 * 24 * 30 //1 month
 }
