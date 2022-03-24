@@ -12,6 +12,6 @@ func main() {
 	})
 	http.HandleFunc("/auth", github.LoginHandler)
 	http.HandleFunc("/auth/callback", github.CallbackHandler)
-
+	
 	_ = http.ListenAndServe(":"+config.Server.Port, nil)
 }

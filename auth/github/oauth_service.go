@@ -19,9 +19,7 @@ func getUserToken(code, state string) string {
 		RedirectUrl:  config.Github.CallbackUrl,
 		State:        state,
 	})
-	req, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token",
-		bytes.NewBuffer(requestJSON),
-	)
+	req, err := http.NewRequest("POST", tokenAPI, bytes.NewBuffer(requestJSON))
 	if err != nil {
 		log.Panic("Error: Token Request Create Error")
 	}
@@ -37,7 +35,7 @@ func getUserToken(code, state string) string {
 	// Response body converted to stringified JSON
 	resBody, _ := ioutil.ReadAll(res.Body)
 	var gts TokenResponse
-	json.Unmarshal(resBody, &gts)
+	_ = json.Unmarshal(resBody, &gts)
 
 	return gts.AccessToken
 }

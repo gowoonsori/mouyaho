@@ -1,5 +1,10 @@
 package github
 
+var (
+	authorizeAPI = "https://github.com/login/oauth/authorize"
+	tokenAPI     = "https://github.com/login/oauth/access_token"
+)
+
 type TokenRequest struct {
 	ClientId     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
