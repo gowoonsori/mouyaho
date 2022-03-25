@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"likeIt/internal/badge"
 	"regexp"
 )
 
@@ -15,11 +14,6 @@ const (
 	defaultEdge   = "flat"
 )
 
-//go:generate mockery --name BadgeService --case underscore --inpackage
-type BadgeService interface {
-	CreateHeartBadge(b Badge, userId uint64) *badge.HeartBadge
-}
-
 //go:generate mockery --name BadgeRepository --case underscore --inpackage
 type BadgeRepository interface {
 	GetReactionsBy(id BadgeId) []reaction
@@ -32,12 +26,11 @@ type Badge struct {
 }
 
 type BadgeId struct {
-	Owner string
 	Repo  string
 	Title string
 }
 
-func CreateBadge(owner, repo, title, bg, border, icon, react, text, share, edge string, reactions []reaction) *Badge {
+func CreateBadge(repo, title, bg, border, icon, react, text, share, edge string, reactions []reaction) *Badge {
 	r, _ := regexp.Compile("#[0-9a-zA-Z]")
 
 	if bg == "" || !r.MatchString(bg) {
@@ -63,7 +56,7 @@ func CreateBadge(owner, repo, title, bg, border, icon, react, text, share, edge 
 	}
 
 	return &Badge{
-		BadgeId: BadgeId{Owner: owner, Repo: repo, Title: title},
+		BadgeId: BadgeId{Repo: repo, Title: title},
 		badgeInfo: badgeInfo{
 			BgColor:     bg,
 			BorderColor: border,
@@ -77,14 +70,8 @@ func CreateBadge(owner, repo, title, bg, border, icon, react, text, share, edge 
 	}
 }
 
-func RenderBadgeHtml(hb badge.HeartBadge) (f []byte) {
-	wr := badge.HeartBadgeWriter
-
-	f, err := wr.ParseFile(hb)
-	if err != nil {
-		f = nil
-	}
-	return
+func CreateBadgeFromDto(d BadgeDto) *Badge {
+	return CreateBadge(d.Repo, d.Title, d.Bg, d.Border, d.Icon, d.React, d.Text, d.Share, d.Edge, nil)
 }
 
 func (b Badge) GetHeartReactions() []reaction {
