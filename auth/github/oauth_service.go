@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"likeIt/config"
 	"log"
+	"mouyaho/config"
 	"net/http"
 )
 
@@ -19,18 +19,14 @@ func getUserToken(code, state string) string {
 		RedirectUrl:  config.Github.CallbackUrl,
 		State:        state,
 	})
-	req, err := http.NewRequest("POST", tokenAPI, bytes.NewBuffer(requestJSON))
-	if err != nil {
-		log.Panic("Error: Token Request Create Error")
-	}
 
 	// Get the Access token
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	res, err := http.DefaultClient.Do(req)
+	res, err := http.Post(tokenAPI, "application/json", bytes.NewBuffer(requestJSON))
 	if err != nil {
 		log.Panic("Request failed")
 	}
+
+	defer res.Body.Close()
 
 	// Response body converted to stringified JSON
 	resBody, _ := ioutil.ReadAll(res.Body)

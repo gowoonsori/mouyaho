@@ -1,5 +1,5 @@
 package domain
 
-type Auth struct {
+type User struct {
 	token string
 }

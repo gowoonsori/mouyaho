@@ -2,7 +2,7 @@ package session
 
 import (
 	"github.com/gorilla/sessions"
-	"likeIt/config"
+	"mouyaho/config"
 )
 
 var (

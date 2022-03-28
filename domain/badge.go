@@ -14,6 +14,10 @@ const (
 	defaultEdge   = "flat"
 )
 
+type BadgeService interface {
+	GetReactions() bool
+}
+
 //go:generate mockery --name BadgeRepository --case underscore --inpackage
 type BadgeRepository interface {
 	GetReactionsBy(id BadgeId) []reaction

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"likeIt/session"
+	"mouyaho/session"
 	"net/http"
 )
 
