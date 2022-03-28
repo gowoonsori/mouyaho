@@ -1,10 +1,12 @@
 package config
 
 import (
-	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	"encoding/base64"
 	"os"
-	"path/filepath"
+)
+
+var (
+	GithubAPI = "https://api.github.com"
 )
 
 type app struct {
@@ -26,12 +28,6 @@ type github struct {
 	PrivateKey   string `yaml:"private-key"`
 }
 
-type config struct {
-	App    app    `yaml:"app"`
-	Server server `yaml:"server"`
-	Github github `yaml:"github"`
-}
-
 var (
 	App    = app{}
 	Server = server{}
@@ -39,28 +35,6 @@ var (
 )
 
 func init() {
-	setLocal()
-}
-
-func setLocal() {
-	var conf config
-	c, _ := filepath.Abs("config/config.yaml")
-	ymlFile, err := ioutil.ReadFile(c)
-	if err != nil {
-		panic(err)
-	}
-
-	err = yaml.Unmarshal(ymlFile, &conf)
-	if err != nil {
-		panic(err)
-	}
-
-	App = conf.App
-	Server = conf.Server
-	Github = conf.Github
-}
-
-func setProd() {
 	App.Name = os.Getenv("MH_APP_NAME")
 	App.SessionKey = os.Getenv("MH_SESSION_KEY")
 	App.StateKey = os.Getenv("MH_STATE_KEY")
@@ -70,5 +44,8 @@ func setProd() {
 	Github.ClientSecret = os.Getenv("MH_GITHUB_CLIENT_SECRET")
 	Github.CallbackUrl = os.Getenv("MH_GITHUB_CALLBACK_URL")
 	Github.PublicKey = os.Getenv("MH_GITHUB_PUBLIC_KEY")
-	Github.PrivateKey = os.Getenv("MH_GITHUB_PRIVATE_KEY")
+
+	//RSA Private key used base64 encode
+	pk, _ := base64.URLEncoding.DecodeString(os.Getenv("MH_GITHUB_PRIVATE_KEY"))
+	Github.PrivateKey = string(pk)
 }
