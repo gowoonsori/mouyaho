@@ -1,4 +1,4 @@
-package badge
+package badges
 
 import (
 	"github.com/gorilla/schema"
@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-var tpl = template.Must(template.ParseGlob("badge/heart.gohtml"))
+var tpl = template.Must(template.ParseGlob("static/badge/heart.gohtml"))
 
-func GetBadge(w http.ResponseWriter, r *http.Request) {
+func HeartBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	d := domain.BadgeDto{}
 	decoder := schema.NewDecoder()
 	_ = decoder.Decode(&d, r.URL.Query())

@@ -1,10 +1,9 @@
-package github
+package auth
 
 import (
 	"encoding/base64"
 	"fmt"
 	"mouyaho/config"
-	"mouyaho/session"
 	"net/http"
 )
 
@@ -28,15 +27,9 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	token := getUserToken(code, state)
 
-	//save token in session
-	c, _ := session.Store.Get(r, session.Name)
-	c.Values["token"] = token
-
-	err := c.Save(r, w)
-	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	//save token in cookie
+	c := CreateCookie(token)
+	w.Header().Set("Set-Cookie", c.String())
 
 	url, err := base64.StdEncoding.DecodeString(state)
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 
 func Test_Env(t *testing.T) {
 	fmt.Println(os.Getenv("MH_APP_NAME"))
-	fmt.Println(os.Getenv("MH_SESSION_KEY"))
 	fmt.Println(os.Getenv("MH_STATE_KEY"))
 	fmt.Println(os.Getenv("MH_SERVER_PORT"))
 	fmt.Println(os.Getenv("MH_GITHUB_APP_ID"))

@@ -1,4 +1,4 @@
-package badge
+package badges
 
 import "mouyaho/domain"
 

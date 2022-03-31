@@ -34,7 +34,7 @@ type BadgeId struct {
 	Title string
 }
 
-func CreateBadge(repo, title, bg, border, icon, react, text, share, edge string, reactions []reaction) *Badge {
+func CreateBadge(repo, title, bg, border, icon, react, textClr, share, edge string, text int, isReact bool, reactions []reaction) *Badge {
 	r, _ := regexp.Compile("#[0-9a-zA-Z]")
 
 	if bg == "" || !r.MatchString(bg) {
@@ -49,8 +49,8 @@ func CreateBadge(repo, title, bg, border, icon, react, text, share, edge string,
 	if react == "" || !r.MatchString(react) {
 		react = defaultReact
 	}
-	if text == "" || !r.MatchString(text) {
-		text = defaultText
+	if textClr == "" || !r.MatchString(textClr) {
+		textClr = defaultText
 	}
 	if share == "" || !r.MatchString(share) {
 		share = defaultShare
@@ -66,16 +66,18 @@ func CreateBadge(repo, title, bg, border, icon, react, text, share, edge string,
 			BorderColor: border,
 			IconColor:   icon,
 			ReactColor:  react,
-			TextColor:   text,
+			Text:        text,
+			TextColor:   textClr,
 			ShareColor:  share,
 			Edge:        edge,
+			IsReact:     isReact,
 		},
 		reactions: reactions,
 	}
 }
 
 func CreateBadgeFromDto(d BadgeDto) *Badge {
-	return CreateBadge(d.Repo, d.Title, d.Bg, d.Border, d.Icon, d.React, d.Text, d.Share, d.Edge, nil)
+	return CreateBadge(d.Repo, d.Title, d.Bg, d.Border, d.Icon, d.React, d.TextColor, d.Share, d.Edge, d.Text, d.IsReact, nil)
 }
 
 func (b Badge) GetHeartReactions() []reaction {

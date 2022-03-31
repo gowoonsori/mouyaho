@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/base64"
+	"flag"
 	"os"
 )
 
@@ -10,9 +11,8 @@ var (
 )
 
 type app struct {
-	Name       string `yaml:"name"`
-	SessionKey string `yaml:"session-key"`
-	StateKey   string `yaml:"state-key"`
+	Name      string `yaml:"name"`
+	CipherKey string `yaml:"ciper-key"`
 }
 
 type server struct {
@@ -35,10 +35,9 @@ var (
 )
 
 func init() {
-	App.Name = os.Getenv("MH_APP_NAME")
-	App.SessionKey = os.Getenv("MH_SESSION_KEY")
-	App.StateKey = os.Getenv("MH_STATE_KEY")
-	Server.Port = os.Getenv("MH_SERVER_PORT")
+	App.Name = *flag.String("name", "mouyaho", "App Name")
+	App.CipherKey = os.Getenv("MH_CIPHER_KEY")
+	Server.Port = *flag.String("port", ":8100", "Host port for the server")
 	Github.AppId = os.Getenv("MH_GITHUB_APP_ID")
 	Github.ClientId = os.Getenv("MH_GITHUB_CLIENT_ID")
 	Github.ClientSecret = os.Getenv("MH_GITHUB_CLIENT_SECRET")

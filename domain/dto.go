@@ -13,7 +13,9 @@ type BadgeDto struct {
 	Border      string `schema:"border"`
 	Icon        string `schema:"icon"`
 	React       string `schema:"react"`
-	Text        string `schema:"text"`
+	Text        int    `schema:"text"`
+	TextColor   string `schema:"text-color"`
 	Share       string `schema:"share"`
+	IsReact     bool   `schema:"isReact"`
 	Edge        string `schema:"edge"` //flat, round
 }

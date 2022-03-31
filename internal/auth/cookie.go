@@ -4,9 +4,29 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
+	"mouyaho/config"
+	"net/http"
 )
 
-func EncryptAES(pt, key []byte) string {
+func CreateCookie(token string) http.Cookie {
+	return http.Cookie{
+		Name:       "my_session",
+		Value:      encryptAES([]byte(token), []byte(config.App.CipherKey)),
+		Path:       "/",
+		RawExpires: "",
+		MaxAge:     1 * 60 * 60 * 30,
+		Secure:     true,
+		HttpOnly:   true,
+	}
+}
+
+func DecryptCookie(cookie http.Cookie) string {
+	c := cookie.Value
+	a := decryptAES([]byte(c), []byte(config.App.CipherKey))
+	return a
+}
+
+func encryptAES(pt, key []byte) string {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
@@ -22,7 +42,7 @@ func EncryptAES(pt, key []byte) string {
 	return hex.EncodeToString(ct)
 }
 
-func DecryptAES(ct, key []byte) string {
+func decryptAES(ct, key []byte) string {
 	ct, _ = hex.DecodeString(string(ct))
 	c, err := aes.NewCipher(key)
 	if err != nil {

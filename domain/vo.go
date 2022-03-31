@@ -9,9 +9,11 @@ type badgeInfo struct {
 	BorderColor string
 	IconColor   string
 	ReactColor  string
+	Text        int
 	TextColor   string
 	ShareColor  string
 	Edge        string //flat, round
+	IsReact     bool
 }
 
 type reaction struct {

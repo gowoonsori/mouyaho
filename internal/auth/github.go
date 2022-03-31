@@ -1,4 +1,4 @@
-package github
+package auth
 
 var (
 	authorizeAPI = "https://github.com/login/oauth/authorize"

@@ -1,4 +1,4 @@
-package github
+package auth
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"log"
 	"mouyaho/config"
 	"net/http"
+	"time"
 )
 
 // get user token after login
@@ -21,10 +22,16 @@ func getUserToken(code, state string) string {
 	})
 
 	// Get the Access token
-	res, err := http.Post(tokenAPI, "application/json", bytes.NewBuffer(requestJSON))
+	req, err := http.NewRequest("POST", tokenAPI, bytes.NewBuffer(requestJSON))
 	if err != nil {
 		log.Panic("Request failed")
 	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+	}
+	res, err := client.Do(req)
 
 	defer res.Body.Close()
 
@@ -32,6 +39,5 @@ func getUserToken(code, state string) string {
 	resBody, _ := ioutil.ReadAll(res.Body)
 	var gts TokenResponse
 	_ = json.Unmarshal(resBody, &gts)
-
 	return gts.AccessToken
 }
