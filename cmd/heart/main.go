@@ -23,13 +23,13 @@ func main() {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("hi"))
 		})
-		r.Get("/badge", badges.HeartBadgeHandler)
+		r.Get("/badge", badges.HeartsBadgeHandler)
 	})
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/auth", auth.LoginHandler)
 		r.Get("/auth/callback", auth.CallbackHandler)
 		r.Get("/token", func(w http.ResponseWriter, r *http.Request) {
-			c, _ := r.Cookie("my_session")
+			c, _ := r.Cookie("mh_session")
 			w.Write([]byte(auth.DecryptCookie(*c)))
 		})
 	})

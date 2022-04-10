@@ -9,7 +9,7 @@ import (
 
 var tpl = template.Must(template.ParseGlob("static/badge/heart.gohtml"))
 
-func HeartBadgeHandler(w http.ResponseWriter, r *http.Request) {
+func HeartsBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	d := domain.BadgeDto{}
 	decoder := schema.NewDecoder()
 	_ = decoder.Decode(&d, r.URL.Query())
@@ -19,4 +19,14 @@ func HeartBadgeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
 	}
+}
+
+func ReactHandler(w http.ResponseWriter, r *http.Request) {
+	c, _ := r.Cookie("myh_session")
+	if c == nil {
+		http.Error(w, "UnAuthorization", http.StatusUnauthorized)
+	}
+
+	//token := auth.DecryptCookie(*c)
+
 }

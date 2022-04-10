@@ -6,10 +6,6 @@ import (
 	"os"
 )
 
-var (
-	GithubAPI = "https://api.github.com"
-)
-
 type app struct {
 	Name      string `yaml:"name"`
 	CipherKey string `yaml:"ciper-key"`

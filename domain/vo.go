@@ -15,14 +15,3 @@ type badgeInfo struct {
 	Edge        string //flat, round
 	IsReact     bool
 }
-
-type reaction struct {
-	Id       uint64
-	UserId   uint64
-	UserName string
-	Content  string
-}
-
-func (r reaction) isHeart() bool {
-	return r.Content == heartContent
-}

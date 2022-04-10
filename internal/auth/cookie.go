@@ -10,7 +10,7 @@ import (
 
 func CreateCookie(token string) http.Cookie {
 	return http.Cookie{
-		Name:       "my_session",
+		Name:       "mh_session",
 		Value:      encryptAES([]byte(token), []byte(config.App.CipherKey)),
 		Path:       "/",
 		RawExpires: "",

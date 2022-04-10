@@ -20,13 +20,13 @@ type BadgeService interface {
 
 //go:generate mockery --name BadgeRepository --case underscore --inpackage
 type BadgeRepository interface {
-	GetReactionsBy(id BadgeId) []reaction
+	CreateHeartsInIssue(owner, repo, token string, issueNumber int) *Reaction
 }
 
 type Badge struct {
 	BadgeId
 	badgeInfo
-	reactions []reaction
+	reactions []Reaction
 }
 
 type BadgeId struct {
@@ -34,7 +34,7 @@ type BadgeId struct {
 	Title string
 }
 
-func CreateBadge(repo, title, bg, border, icon, react, textClr, share, edge string, text int, isReact bool, reactions []reaction) *Badge {
+func CreateBadge(repo, title, bg, border, icon, react, textClr, share, edge string, text int, isReact bool, reactions []Reaction) *Badge {
 	r, _ := regexp.Compile("#[0-9a-zA-Z]")
 
 	if bg == "" || !r.MatchString(bg) {
@@ -80,8 +80,8 @@ func CreateBadgeFromDto(d BadgeDto) *Badge {
 	return CreateBadge(d.Repo, d.Title, d.Bg, d.Border, d.Icon, d.React, d.TextColor, d.Share, d.Edge, d.Text, d.IsReact, nil)
 }
 
-func (b Badge) GetHeartReactions() []reaction {
-	res := make([]reaction, len(b.reactions))
+func (b Badge) GetHeartReactions() []Reaction {
+	res := make([]Reaction, len(b.reactions))
 	for _, r := range b.reactions {
 		if r.isHeart() {
 			res = append(res, r)
@@ -90,7 +90,7 @@ func (b Badge) GetHeartReactions() []reaction {
 	return res
 }
 
-func (b Badge) GetHeartReactionByUserId(id uint64) *reaction {
+func (b Badge) GetHeartReactionByUserId(id int64) *Reaction {
 	for _, r := range b.reactions {
 		if r.UserId == id && r.isHeart() {
 			return &r

@@ -32,10 +32,11 @@ func getUserToken(code, state string) string {
 		Timeout: 3 * time.Second,
 	}
 	res, err := client.Do(req)
-
+	if err != nil {
+		return ""
+	}
 	defer res.Body.Close()
 
-	// Response body converted to stringified JSON
 	resBody, _ := ioutil.ReadAll(res.Body)
 	var gts TokenResponse
 	_ = json.Unmarshal(resBody, &gts)
