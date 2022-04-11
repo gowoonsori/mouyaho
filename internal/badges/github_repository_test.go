@@ -18,7 +18,7 @@ func Test_Issue_Search_Success(t *testing.T) {
 
 func Test_Issue_Reaction_Hearts_Success(t *testing.T) {
 	//given
-	owner, repo, token := "gowoonsori", "blog-comments", "ghu_MzsR78EuFl6j7ft1FJE3xoAo8vqzDl0Cm3qL"
+	owner, repo, token := "gowoonsori", "blog-comments", ""
 	issueNumber := 1
 
 	//when
