@@ -7,21 +7,21 @@ import (
 )
 
 type app struct {
-	Name      string `yaml:"name"`
-	CipherKey string `yaml:"ciper-key"`
+	Name      string
+	CipherKey string
 }
 
 type server struct {
-	Port string `yaml:"port"`
+	Port string
 }
 
 type github struct {
-	AppId        string `yaml:"app-id"`
-	ClientId     string `yaml:"client-id"`
-	ClientSecret string `yaml:"client-secret"`
-	CallbackUrl  string `yaml:"callback-url"`
-	PublicKey    string `yaml:"public-key"`
-	PrivateKey   string `yaml:"private-key"`
+	AppId        string
+	ClientId     string
+	ClientSecret string
+	CallbackUrl  string
+	PublicKey    string
+	PrivateKey   string
 }
 
 var (

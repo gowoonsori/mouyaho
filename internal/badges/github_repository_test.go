@@ -8,24 +8,11 @@ import (
 func Test_Issue_Search_Success(t *testing.T) {
 	//given
 	repo, title := "gowoonsori/blog-comments", "home/"
+	gh := GithubRepository{}
 
 	//when
-	issues := GetIssues(repo, title)
+	issues := gh.GetIssues(repo, title)
 
 	//then
 	assert.Equal(t, 3, len(issues))
-}
-
-func Test_Issue_Reaction_Hearts_Success(t *testing.T) {
-	//given
-	owner, repo, token := "gowoonsori", "blog-comments", ""
-	issueNumber := 1
-
-	//when
-	reaction := CreateHeartsInIssue(owner, repo, token, issueNumber)
-
-	//then
-	assert.NotNil(t, reaction)
-	assert.Equal(t, "heart", reaction.Content)
-	assert.Equal(t, "gowoonsori", reaction.User.Login)
 }

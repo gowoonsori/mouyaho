@@ -15,12 +15,10 @@ const (
 )
 
 type BadgeService interface {
-	GetReactions() bool
 }
 
 //go:generate mockery --name BadgeRepository --case underscore --inpackage
 type BadgeRepository interface {
-	CreateHeartsInIssue(owner, repo, token string, issueNumber int) *Reaction
 }
 
 type Badge struct {
