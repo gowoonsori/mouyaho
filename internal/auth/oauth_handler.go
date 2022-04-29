@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mouyaho/config"
 	"net/http"
+	"net/url"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,15 +27,21 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
 	token := getUserToken(code, state)
+	session := CreateSession(token)
 
-	//save token in cookie
-	c := CreateCookie(token)
-	w.Header().Set("Set-Cookie", c.String())
-
-	url, err := base64.StdEncoding.DecodeString(state)
+	u, err := base64.StdEncoding.DecodeString(state)
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, string(url), http.StatusFound)
+
+	redirectUrl, err := url.Parse(string(u))
+	if err != nil {
+		http.Error(w, "잘못된 url입니다.", http.StatusBadRequest)
+		return
+	}
+	q, _ := url.ParseQuery(redirectUrl.RawQuery)
+	q.Set("mh", session)
+	redirectUrl.RawQuery = q.Encode()
+	http.Redirect(w, r, redirectUrl.String(), http.StatusFound)
 }

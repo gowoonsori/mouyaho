@@ -5,24 +5,14 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"mouyaho/config"
-	"net/http"
 )
 
-func CreateCookie(token string) http.Cookie {
-	return http.Cookie{
-		Name:       "mh_session",
-		Value:      encryptAES([]byte(token), []byte(config.App.CipherKey)),
-		Path:       "/",
-		RawExpires: "",
-		MaxAge:     1 * 60 * 60 * 30,
-		Secure:     true,
-		HttpOnly:   true,
-	}
+func CreateSession(token string) string {
+	return encryptAES([]byte(token), []byte(config.App.CipherKey))
 }
 
-func DecryptCookie(cookie http.Cookie) string {
-	c := cookie.Value
-	a := decryptAES([]byte(c), []byte(config.App.CipherKey))
+func Decrypt(session []byte) string {
+	a := decryptAES(session, []byte(config.App.CipherKey))
 	return a
 }
 

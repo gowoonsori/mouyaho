@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httprate"
+	"io/ioutil"
 	"mouyaho/config"
 	"mouyaho/internal/auth"
 	"mouyaho/internal/badges"
@@ -35,14 +36,20 @@ func initRoute(r *chi.Mux) {
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/auth", auth.LoginHandler)
 		r.Get("/auth/callback", auth.CallbackHandler)
-		r.Get("/token", func(w http.ResponseWriter, r *http.Request) {
-			c, _ := r.Cookie("mh_session")
-			if c == nil {
-				http.Error(w, "Bad Request: Empty cookie", http.StatusBadRequest)
+		r.Post("/token", func(w http.ResponseWriter, r *http.Request) {
+			session, err := ioutil.ReadAll(r.Body)
+			defer r.Body.Close()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if session == nil || len(session) == 0 {
+				http.Error(w, "Bad Request: Empty session", http.StatusBadRequest)
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			token := auth.DecryptCookie(*c)
+			token := auth.Decrypt(session)
 			json.NewEncoder(w).Encode(struct {
 				Token string `json:"token"`
 			}{

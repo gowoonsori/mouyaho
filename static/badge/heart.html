@@ -16,13 +16,19 @@
         .badge-container .badge-box .text .text-box span {display: table-cell;color:black;vertical-align: middle; padding-bottom: 1px;}
         .badge-container .badge-box .share {margin-left: 20px;position: relative;stroke:black;}
         .tooltip-text {visibility: hidden;font-size: 0.8em;width: 50px;background-color: #333333;color: #fafafa;text-align: center;padding: 0 0 5px;border-radius: 6px;position: absolute;z-index: 1;top: 25px;}
+        .Popover {position: absolute;z-index: 100;border: 1px solid #e1e4e8;border-radius: 5px;margin-top: 5px;left: 3px;}
+        .Popover-message {border-radius: 5px;background-color: #ffffff;margin-left: auto;margin-right: auto;width: 128px;box-shadow: 0 8px 24px #959da533!important;padding: 16px 8px 16px 8px;}
+        .Popover-message:before {border: 7px solid;border-color: #0000 #0000 #e1e4e8;margin-left: -8px;top: -15px;}
+        .Popover-message:after {border: 7px solid;border-color: #0000 #0000 #ffffff;margin-left: -8px;top: -14px;}
+        .Popover-message:after, .Popover-message:before {content: "";display: inline-block;left: 31px;position: absolute;}
+        .hidden {display: none;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 </head>
 <body>
 <div class="badge-container" >
     <div class="badge-box">
-        <div class="hearts item-container" data-service="react" onclick="onHeartEvent(this)">
+        <div class="hearts item-container" data-service="react" onclick="onHeartsEvent(this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="21px">
                 <g id="heart" class="icon {{if .IsReact}}react{{end}}" transform="translate(1,0)" >
                     <path transform="scale(0.04,0.04)"
@@ -34,6 +40,11 @@
                 <div class="text-box">
                     <span id="heart-text">142</span>
                 </div>
+            </div>
+        </div>
+        <div class="Popover hidden" id="login-popover">
+            <div class="Popover-message">
+                <span>Need to <a href="http://localhost:8100/api/auth?url=http%3A%2F%2Flocalhost%3A63342%2Fmouyaho%2Fstatic%2Fbadge%2Fheart.html" target="_top">Sign in</a></span>
             </div>
         </div>
         <div id="share-url" class="share item-container" data-clipboard-text="url1">
@@ -49,6 +60,40 @@
     </div>
 </div>
 <script>
+    let tk = '';
+
+    (function () {
+        //set session
+        const url = new URL(location.href)
+        const s = url.searchParams.get("mh")
+        if(!!s !== false) {
+            url.searchParams.delete("mh")
+            history.replaceState({},document.title,url.href)
+            sessionStorage.setItem('mh-session',s)
+        }
+
+        //get token
+        let ms = sessionStorage.getItem('mh-session');
+        if(!!ms !== false) {
+            fetch(`http://localhost:8100/api/token`, {
+                method: 'POST',
+                credentials: 'include',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: ms,
+            }).then(function(res) {
+                if(res.status === 200) {
+                   return res.json();
+                }
+            }).then(function(data) {
+                tk = data.token;
+                console.log(tk);
+            });
+        }
+    })();
+
     const clipboard = new ClipboardJS(document.getElementById('share-url'));
     clipboard.on('success', function (){
         document.getElementById('tooltip-text').style.visibility = 'visible';
@@ -57,41 +102,51 @@
         },1000);
     })
 
-    const onHeartEvent = async function(e){
-        let s = e.dataset.service;
+    const onHeartsEvent = async function(e){
         let cnt = document.getElementById('heart-text').innerText;
-        if (s === 'react'){
-            const tokenRes = await fetch(`http://localhost:8100/api/token`,{
-                origin: 'http://localhost:8100',
-                credentials: 'include',
+        if(!!tk !== false){
+            const reactionsRes = await fetch(`https://api.github.com/repos/gowoonsori/blog-comments/issues/1/reactions`,{
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": "Bearer " + tk
+                },
+                body: JSON.stringify({
+                    "content": "heart"
+                }),
             });
-            if(tokenRes.status === 200){
-                const res = await tokenRes.json()
-                if(res.token !== null) {
-                    const reactionsRes = await fetch(`https://api.github.com/repos/gowoonsori/blog-comments/issues/1/reactions`,{
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/vnd.github.v3+json",
-                            "Authorization": "Bearer " + res.token
-                        },
-                        body: JSON.stringify({
-                            "content": "heart"
-                        }),
-                    });
-                    const reactions = await reactionsRes.json()
-                    if(reactions.content === 'heart'){
-                        document.getElementById('heart').classList.add('react');
-                        e.dataset.service = '';
-                        document.getElementById('heart-text').innerText = String(Number(cnt) + 1);
-                    }
-                }
+            const reactions = await reactionsRes.json()
+            if(reactions.content === 'heart'){
+                document.getElementById('heart').classList.add('react');
+                e.setAttribute('onClick', 'onBreakHeartsEvent(this)');
+                document.getElementById('heart-text').innerText = String(Number(cnt) + 1);
             }
         } else {
-            document.getElementById("heart").classList.remove('react');
-            e.dataset.service = 'react';
-            document.getElementById('heart-text').innerText = String(Number(cnt) - 1);
+            document.getElementById('login-popover').classList.remove('hidden');
         }
+    }
+    const onBreakHeartsEvent = async function (e) {
+        let cnt = document.getElementById('heart-text').innerText;
+        if(!!tk !== false){
+            const reactionsRes = await fetch(`https://api.github.com/repos/gowoonsori/blog-comments/issues/1/reactions`,{
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": "Bearer " + tk
+                },
+            });
+            const reactions = await reactionsRes.json()
+            if(reactions.content === 'heart'){
+                document.getElementById("heart").classList.remove('react');
+                e.setAttribute('onClick', 'onHeartsEvent(this)');
+                document.getElementById('heart-text').innerText = String(Number(cnt) - 1);
+            }
+        } else {
+            document.getElementById('login-popover').classList.add('hidden');
+        }
+
     }
 </script>
 </body>
