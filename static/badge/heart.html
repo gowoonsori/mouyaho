@@ -15,12 +15,12 @@
         .badge-container .badge-box .text .text-box{display: table;}
         .badge-container .badge-box .text .text-box span {display: table-cell;color:black;vertical-align: middle; padding-bottom: 1px;}
         .badge-container .badge-box .share {margin-left: 20px;position: relative;stroke:black;}
-        .tooltip-text {visibility: hidden;font-size: 0.8em;width: 50px;background-color: #333333;color: #fafafa;text-align: center;padding: 0 0 5px;border-radius: 6px;position: absolute;z-index: 1;top: 25px;}
-        .Popover {position: absolute;z-index: 100;border: 1px solid #e1e4e8;border-radius: 5px;margin-top: 5px;left: 3px;}
-        .Popover-message {border-radius: 5px;background-color: #ffffff;margin-left: auto;margin-right: auto;width: 128px;box-shadow: 0 8px 24px #959da533!important;padding: 16px 8px 16px 8px;}
-        .Popover-message:before {border: 7px solid;border-color: #0000 #0000 #e1e4e8;margin-left: -8px;top: -15px;}
-        .Popover-message:after {border: 7px solid;border-color: #0000 #0000 #ffffff;margin-left: -8px;top: -14px;}
-        .Popover-message:after, .Popover-message:before {content: "";display: inline-block;left: 31px;position: absolute;}
+        .tooltip-text {visibility: hidden;font-size: 0.8em;width: 50px;left:-7px;background-color: #333333;color: #fafafa;text-align: center;padding: 0 0 5px;border-radius: 6px;position: absolute;z-index: 1;top: 25px;}
+        .popover {position: absolute;z-index: 100;border: 1px solid #e1e4e8;border-radius: 5px;margin-top: 5px;left: 3px;}
+        .popover-message {border-radius: 5px;background-color: #ffffff;margin-left: auto;margin-right: auto;width: 128px;box-shadow: 0 8px 24px #959da533!important;padding: 16px 8px 16px 8px;}
+        .popover-message:before {border: 7px solid;border-color: #0000 #0000 #e1e4e8;margin-left: -8px;top: -15px;}
+        .popover-message:after {border: 7px solid;border-color: #0000 #0000 #ffffff;margin-left: -8px;top: -14px;}
+        .popover-message:after, .popover-message:before {content: "";display: inline-block;left: 31px;position: absolute;}
         .hidden {display: none;}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
@@ -30,21 +30,21 @@
     <div class="badge-box">
         <div class="hearts item-container" data-service="react" onclick="onHeartsEvent(this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="21px">
-                <g id="heart" class="icon {{if .IsReact}}react{{end}}" transform="translate(1,0)" >
-                    <path transform="scale(0.04,0.04)"
+                <g id="hearts" class="icon {{if .IsReact}}react{{end}}" transform="translate(1,0)" >
+                    <path class="hearts-icon" transform="scale(0.04,0.04)"
                           d="M 433.601 67.001 C 408.901 42.301 376.201 28.801 341.301 28.801 C 306.401 28.801 273.601 42.401 248.901 67.101 L 236.001 80.001 L 222.901 66.901 C 198.201 42.201 165.301 28.501 130.401 28.501 C 95.601 28.501 62.801 42.101 38.201 66.701 C 13.501 91.401 -0.099 124.201 0.001 159.101 C 0.001 194.001 13.701 226.701 38.401 251.401 L 226.201 439.201 C 228.801 441.801 232.301 443.201 235.701 443.201 C 239.101 443.201 242.601 441.901 245.201 439.301 L 433.401 251.801 C 458.101 227.101 471.701 194.301 471.701 159.401 C 471.801 124.501 458.301 91.701 433.601 67.001 Z"
                     />
                 </g>
             </svg>
             <div class="text item-container">
                 <div class="text-box">
-                    <span id="heart-text">142</span>
+                    <span id="hearts-text">142</span>
                 </div>
             </div>
         </div>
-        <div class="Popover hidden" id="login-popover">
-            <div class="Popover-message">
-                <span>Need to <a href="http://localhost:8100/api/auth?url=http%3A%2F%2Flocalhost%3A63342%2Fmouyaho%2Fstatic%2Fbadge%2Fheart.html" target="_top">Sign in</a></span>
+        <div class="popover hidden" id="login-popover">
+            <div class="popover-message">
+                <span clss="popover-content">Need to <a href="http://localhost:8100/api/auth?url=http%3A%2F%2Flocalhost%3A63342%2Fmouyaho%2Fstatic%2Fbadge%2Fheart.html" target="_top">Sign in</a></span>
             </div>
         </div>
         <div id="share-url" class="share item-container" data-clipboard-text="url1">
@@ -61,7 +61,6 @@
 </div>
 <script>
     let tk = '';
-
     (function () {
         //set session
         const url = new URL(location.href)
@@ -94,40 +93,52 @@
         }
     })();
 
-    const clipboard = new ClipboardJS(document.getElementById('share-url'));
-    clipboard.on('success', function (){
-        document.getElementById('tooltip-text').style.visibility = 'visible';
+    //Popover hidden event
+    document.body.addEventListener("click", function (e){
+        const target = e.target;
+        if(target.className === "popover" || target.className === "popover-message" || target.className === "popover-content"
+            || target.parentNode?.className === 'popover-message' || target.parentNode?.parentNode?.className === 'popover-message'
+            || target.className?.baseVal === "hearts-icon"){
+            return false;
+        }
+        document.getElementById("login-popover").classList.add("hidden");
+    });
+
+    //Clipboard copy event
+    const clipboard = new ClipboardJS(document.getElementById("share-url"));
+    clipboard.on("success", function (){
+        document.getElementById("tooltip-text").style.visibility = "visible";
         setTimeout(function (){
-            document.getElementById('tooltip-text').style.visibility = 'hidden';
-        },1000);
+            document.getElementById("tooltip-text").style.visibility = "hidden";
+        },1500);
     })
 
     const onHeartsEvent = async function(e){
-        let cnt = document.getElementById('heart-text').innerText;
+        let cnt = document.getElementById("hearts-text").innerText;
         if(!!tk !== false){
             const reactionsRes = await fetch(`https://api.github.com/repos/gowoonsori/blog-comments/issues/1/reactions`,{
-                method: 'POST',
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/vnd.github.v3+json",
                     "Authorization": "Bearer " + tk
                 },
                 body: JSON.stringify({
-                    "content": "heart"
+                    "content": "hearts"
                 }),
             });
             const reactions = await reactionsRes.json()
-            if(reactions.content === 'heart'){
-                document.getElementById('heart').classList.add('react');
+            if(reactions.content === 'hearts'){
+                document.getElementById('hearts').classList.add('react');
                 e.setAttribute('onClick', 'onBreakHeartsEvent(this)');
-                document.getElementById('heart-text').innerText = String(Number(cnt) + 1);
+                document.getElementById('hearts-text').innerText = String(Number(cnt) + 1);
             }
         } else {
             document.getElementById('login-popover').classList.remove('hidden');
         }
     }
     const onBreakHeartsEvent = async function (e) {
-        let cnt = document.getElementById('heart-text').innerText;
+        let cnt = document.getElementById('hearts-text').innerText;
         if(!!tk !== false){
             const reactionsRes = await fetch(`https://api.github.com/repos/gowoonsori/blog-comments/issues/1/reactions`,{
                 method: 'DELETE',
@@ -138,10 +149,10 @@
                 },
             });
             const reactions = await reactionsRes.json()
-            if(reactions.content === 'heart'){
-                document.getElementById("heart").classList.remove('react');
+            if(reactions.content === 'hearts'){
+                document.getElementById("hearts").classList.remove('react');
                 e.setAttribute('onClick', 'onHeartsEvent(this)');
-                document.getElementById('heart-text').innerText = String(Number(cnt) - 1);
+                document.getElementById('hearts-text').innerText = String(Number(cnt) - 1);
             }
         } else {
             document.getElementById('login-popover').classList.add('hidden');
